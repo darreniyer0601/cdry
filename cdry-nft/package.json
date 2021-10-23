@@ -1,0 +1,21 @@
+{
+  "name": "cdry-nft",
+  "version": "1.0.0",
+  "description": "A test NFT for the cdry project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "cdry",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "ethers": "^5.0.0",
+    "hardhat": "^2.6.7"
+  },
+  "dependencies": {
+    "@alch/alchemy-web3": "^1.1.7",
+    "@openzeppelin/contracts": "^4.3.2",
+    "dotenv": "^10.0.0"
+  }
+}

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Switch, Route, Link, BrowserRouter as Router } from "react-router-dom";
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
@@ -8,20 +8,14 @@ import Cart from './components/Cart';
 import Login from './components/Login';
 import ProductList from './components/ProductList';
 
-import Context from "./Context";
-
-export default class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+export default App = () => {
+  const [state, setState] = useState({
       user: null,
       cart: {},
       products: []
-    };
-    this.routerRef = React.createRef();
-  }
+  });
 
-  async componentDidMount() {
+  useEffect(() => {
     let user = localStorage.getItem("user");
     let cart = localStorage.getItem("cart");
 
@@ -29,8 +23,8 @@ export default class App extends Component {
     user = user ? JSON.parse(user) : null;
     cart = cart? JSON.parse(cart) : {};
 
-    this.setState({ user,  products: products.data, cart });
-  }
+    setState({ user,  products: products.data, cart });
+  });
 
   login = async (email, password) => {
     const res = await axios.post(
@@ -48,7 +42,7 @@ export default class App extends Component {
         accessLevel: email === 'admin@example.com' ? 0 : 1
       }
 
-      this.setState({ user });
+      setState({ user });
       localStorage.setItem("user", JSON.stringify(user));
       return true;
     } else {
@@ -58,18 +52,18 @@ export default class App extends Component {
 
   logout = e => {
     e.preventDefault();
-    this.setState({ user: null });
+    setState({ user: null });
     localStorage.removeItem("user");
   };
 
   addProduct = (product, callback) => {
-    let products = this.state.products.slice();
+    let products = state.products.slice();
     products.push(product);
-    this.setState({ products }, () => callback && callback());
+    setState({ products }, () => callback && callback());
   };
 
   addToCart = cartItem => {
-    let cart = this.state.cart;
+    let cart = state.cart;
     if (cart[cartItem.id]) {
       cart[cartItem.id].amount += cartItem.amount;
     } else {
@@ -79,33 +73,31 @@ export default class App extends Component {
       cart[cartItem.id].amount = cart[cartItem.id].product.stock;
     }
     localStorage.setItem("cart", JSON.stringify(cart));
-    this.setState({ cart });
+    setState({ cart });
   };
 
   removeFromCart = cartItemId => {
-    let cart = this.state.cart;
+    let cart = state.cart;
     delete cart[cartItemId];
     localStorage.setItem("cart", JSON.stringify(cart));
-    this.setState({ cart });
+    setState({ cart });
   };
 
   clearCart = () => {
     let cart = {};
     localStorage.removeItem("cart");
-    this.setState({ cart });
+    setState({ cart });
   };
 
   checkout = () => {
-    if (!this.state.user) {
+    if (!state.user) {
       this.routerRef.current.history.push("/login");
       return;
     }
 
-    const cart = this.state.cart;
-
-    const products = this.state.products.map(p => {
-      if (cart[p.name]) {
-        p.stock = p.stock - cart[p.name].amount;
+    const products = state.products.map(p => {
+      if (state.cart[p.name]) {
+        p.stock = p.stock - state.cart[p.name].amount;
 
         axios.put(
           `http://localhost:3001/products/${p.id}`,
@@ -115,89 +107,74 @@ export default class App extends Component {
       return p;
     });
 
-    this.setState({ products });
+    setState({ products });
     this.clearCart();
   };
 
-  render() {
-    return (
-      <Context.Provider
-        value={{
-          ...this.state,
-          removeFromCart: this.removeFromCart,
-          addToCart: this.addToCart,
-          login: this.login,
-          addProduct: this.addProduct,
-          clearCart: this.clearCart,
-          checkout: this.checkout
-        }}
+  
+  return (
+    <div className="App">
+      <nav
+        className="navbar container"
+        role="navigation"
+        aria-label="main navigation"
       >
-        <Router ref={this.routerRef}>
-        <div className="App">
-          <nav
-            className="navbar container"
-            role="navigation"
-            aria-label="main navigation"
+        <div className="navbar-brand">
+          <b className="navbar-item is-size-4 ">ecommerce</b>
+          <label
+            role="button"
+            class="navbar-burger burger"
+            aria-label="menu"
+            aria-expanded="false"
+            data-target="navbarBasicExample"
+            onClick={e => {
+              e.preventDefault();
+              setState({ showMenu: !state.showMenu });
+            }}
           >
-            <div className="navbar-brand">
-              <b className="navbar-item is-size-4 ">ecommerce</b>
-              <label
-                role="button"
-                class="navbar-burger burger"
-                aria-label="menu"
-                aria-expanded="false"
-                data-target="navbarBasicExample"
-                onClick={e => {
-                  e.preventDefault();
-                  this.setState({ showMenu: !this.state.showMenu });
-                }}
-              >
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-              </label>
-            </div>
-              <div className={`navbar-menu ${
-                  this.state.showMenu ? "is-active" : ""
-                }`}>
-                <Link to="/products" className="navbar-item">
-                  Products
-                </Link>
-                {this.state.user && this.state.user.accessLevel < 1 && (
-                  <Link to="/add-product" className="navbar-item">
-                    Add Product
-                  </Link>
-                )}
-                <Link to="/cart" className="navbar-item">
-                  Cart
-                  <span
-                    className="tag is-primary"
-                    style={{ marginLeft: "5px" }}
-                  >
-                    { Object.keys(this.state.cart).length }
-                  </span>
-                </Link>
-                {!this.state.user ? (
-                  <Link to="/login" className="navbar-item">
-                    Login
-                  </Link>
-                ) : (
-                  <Link to="/" onClick={this.logout} className="navbar-item">
-                    Logout
-                  </Link>
-                )}
-              </div>
-            </nav>
-            <Switch>
-              <Route exact path="/" component={ProductList} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/cart" component={Cart} />
-              <Route exact path="/add-product" component={AddProduct} />
-              <Route exact path="/products" component={ProductList} />
-            </Switch>
-          </div>
-        </Router>
-      </Context.Provider>
-    );
-  }
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </label>
+        </div>
+        <div className={`navbar-menu ${
+          state.showMenu ? "is-active" : ""
+        }`}>
+          <Link to="/products" className="navbar-item">
+            Products
+          </Link>
+          {state.user && state.user.accessLevel < 1 && (
+            <Link to="/add-product" className="navbar-item">
+              Add Product
+            </Link>
+          )}
+          <Link to="/cart" className="navbar-item">
+            Cart
+            <span
+              className="tag is-primary"
+              style={{ marginLeft: "5px" }}
+            >
+              { Object.keys(state.cart).length }
+            </span>
+          </Link>
+          {!state.user ? (
+            <Link to="/login" className="navbar-item">
+              Login
+            </Link>
+          ) : (
+            <Link to="/" onClick={this.logout} className="navbar-item">
+              Logout
+            </Link>
+          )}
+        </div>
+      </nav>
+      <Switch>
+        <Route exact path="/" component={ProductList} />
+        <Route exact path="/login" component={Login} />
+        <Route exact path="/cart" component={Cart} />
+        <Route exact path="/add-product" component={AddProduct} />
+        <Route exact path="/products" component={ProductList} />
+      </Switch>
+    </div>
+  );
 }

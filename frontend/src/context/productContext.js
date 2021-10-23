@@ -42,8 +42,8 @@ export const ProductContextProvier = (props) => {
 		setState({ ...state, cart });
 	};
 
-	const checkout = () => {
-		if (!state.user) {
+	const checkout = (user) => {
+		if (user) {
 			props.history.push("/login");
 			return;
 		}

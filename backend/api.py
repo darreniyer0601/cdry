@@ -54,10 +54,10 @@ def createCatalogItem():
         payload = {
             'version': 0,
             'shortDescription': {
-                'values': {
+                'values': [{
                     'locale': 'en-US',
                     'value': data.NFTData
-                }
+                }]
             }
         }
         uniqueID = "HACKCDRYNFTID"
@@ -66,7 +66,11 @@ def createCatalogItem():
             return "Successful"
         else:
             return "Failed to upload catalog item"
-            
+
+@app.route('/selectItem', methods = ['GET'])
+def selectItem():
+    if request.method == 'GET':
+        return
 data = {'username':'username', 'password': 'password'} # Has username and password
 payload = {"searchCriteria": {"profileUsername": data['username'], 
             "socialSecurityNumber": data['password']}, "operator": "AND", 

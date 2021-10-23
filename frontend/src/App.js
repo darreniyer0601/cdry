@@ -15,7 +15,7 @@ export default App = () => {
       products: []
   });
 
-  useEffect(() => {
+  useEffect(async () => {
     let user = localStorage.getItem("user");
     let cart = localStorage.getItem("cart");
 

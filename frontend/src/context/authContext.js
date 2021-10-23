@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 
@@ -8,6 +8,15 @@ export const AuthContextProvider = (props) => {
 	const [state, setState] = useState({
 		user: null,
 	});
+
+	useEffect(() => {
+		const fetchUserData = async () => {
+		  let user = localStorage.getItem("user");
+		  user = user ? JSON.parse(user) : null;
+		  setState({ user });
+		}
+	fetchUserData();
+	}, [state]);
 
 	const login = async (email, password) => {
 		const res = await axios

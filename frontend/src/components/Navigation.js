@@ -52,12 +52,12 @@ const Navigation = () => {
 							{Object.keys(cart).length}
 						</span>
 					</Link>
-					{user ? (
+					{!user ? (
 						<>
-							<Link to="/login" className="navbar-item">
+							<Link to="/login" className="navbar-item is-pulled-right">
 								Login
 							</Link>
-							<Link to="/register" className="navbar-item">
+							<Link to="/register" className="navbar-item is-pulled-right">
 								Register
 							</Link>
 						</>

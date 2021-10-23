@@ -137,7 +137,7 @@ def createCatalogItem():
             'shortDescription': {
                 'values': [{
                     'locale': 'en-US',
-                    'value': data.NFTData
+                    'value': data['NFTData']
                 }]
             }
         }

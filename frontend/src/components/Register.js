@@ -24,11 +24,12 @@ const Register = (props) => {
 
 	const register = (e) => {
 		e.preventDefault();
-
+		console.log(state)
 		const { username, firstName, lastName, password } = state;
 
 		if (!username || !password) {
-			return setState({ ...state, error: "Fill all fields!" });
+			setState({ ...state, error: "Fill all fields!" });
+			return;
 		}
 
 		authContext
@@ -95,7 +96,9 @@ const Register = (props) => {
 								type="password"
 								onChange={(e) => {
 									if (state.password !== e.target.value) {
-										this.setState({ error: "Passwords do not match!" });
+										setState({...state, error: "Passwords do not match!" });
+									} else {
+										setState({...state, error: "" });
 									}
 								}}
 							/>

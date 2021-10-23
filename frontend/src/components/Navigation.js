@@ -23,7 +23,7 @@ const Navigation = () => {
 					<b className="navbar-item is-size-4 ">CRDY</b>
 					<label
 						role="button"
-						class="navbar-burger burger"
+						className="navbar-burger burger"
 						aria-label="menu"
 						aria-expanded="false"
 						data-target="navbarBasicExample"

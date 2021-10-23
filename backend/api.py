@@ -80,7 +80,6 @@ def ncrPost(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf",
     res['data'] = request.json()
 
     json_formatted = json.dumps(res, indent=2)
-    # print(json_formatted)
 
     return res
 
@@ -92,21 +91,11 @@ def login():
                     "identity": data['password']}, "operator": "AND", 
                     "pageStart": 0, "pageSize": 10}
         res = ncrPost(data=payload, requestURL="https://gateway-staging.ncrcloud.com/cdm/consumers/find")
-        print("\n")
-        print("\n")
-        print(res)
-        print("\n")
-        print("\n")
         if res['status'] == 200:
             data = res['data']
-            if (data['numberFound']) == 1: # One consumer per username and password
-                consumer = data['consumers'][0]
-                CAN = consumer['consumerAccountNumber']
-                consumerData = {'firstName': consumer['firstName'],
-                                'lastName': consumer['lastName']
-                }
+            if (data['numberFound']) == 1:
                 # Log them in
-            return res
+                return res
         else:
             return "Error contacting NCR customer API"
 
@@ -137,7 +126,7 @@ def createCatalogItem():
             'shortDescription': {
                 'values': [{
                     'locale': 'en-US',
-                    'value': data.NFTData
+                    'value': data['NFTData']
                 }]
             }
         }

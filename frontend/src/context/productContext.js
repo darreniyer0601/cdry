@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const ProductContext = React.createContext();
@@ -8,6 +8,20 @@ export const ProductContextProvier = (props) => {
 		cart: {},
 		products: [],
 	});
+
+	useEffect(() => {
+		const fetchProducts = async() => {
+			// const res = await axios
+			// 	.post("/createCatalogItem", nftData)
+			// 	.catch((res) => {
+			// 		return { status: 401, message: "Unauthorized" };
+			// 	});
+			// setState({
+			// 	products: [],
+			// })
+		}
+		fetchProducts();
+	})
 
 	const addProduct = (product, callback) => {
 		let products = state.products.slice();

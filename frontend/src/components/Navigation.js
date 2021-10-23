@@ -36,8 +36,6 @@ const Navigation = () => {
 						<span aria-hidden="true"></span>
 						<span aria-hidden="true"></span>
 					</label>
-				</div>
-				<div className={`navbar-menu ${state.showMenu ? "is-active" : ""}`}>
 					<Link to="/products" className="navbar-item">
 						Products
 					</Link>
@@ -52,6 +50,8 @@ const Navigation = () => {
 							{Object.keys(cart).length}
 						</span>
 					</Link>
+				</div>
+				<div className={`navbar-menu ${state.showMenu ? "is-active" : ""}`}>
 					{!user ? (
 						<>
 							<Link to="/login" className="navbar-item">

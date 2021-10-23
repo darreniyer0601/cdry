@@ -94,7 +94,7 @@ const Register = (props) => {
 								className="input"
 								type="password"
 								onChange={(e) => {
-									if (state.password !== e.target.value) {
+									if (state.password != e.target.value) {
 										this.setState({ error: "Passwords do not match!" });
 									}
 								}}

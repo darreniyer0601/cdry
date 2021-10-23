@@ -54,10 +54,10 @@ const Navigation = () => {
 					</Link>
 					{!user ? (
 						<>
-							<Link to="/login" className="navbar-item is-pulled-right">
+							<Link to="/login" className="navbar-item">
 								Login
 							</Link>
-							<Link to="/register" className="navbar-item is-pulled-right">
+							<Link to="/register" className="navbar-item">
 								Register
 							</Link>
 						</>

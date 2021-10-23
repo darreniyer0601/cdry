@@ -8,7 +8,7 @@ import Cart from './components/Cart';
 import Login from './components/Login';
 import ProductList from './components/ProductList';
 
-export default App = () => {
+const App = () => {
   const [state, setState] = useState({
       user: null,
       cart: {},
@@ -26,7 +26,7 @@ export default App = () => {
     setState({ user,  products: products.data, cart });
   });
 
-  login = async (email, password) => {
+  const login = async (email, password) => {
     const res = await axios.post(
       'http://localhost:3001/login',
       { email, password },
@@ -50,7 +50,7 @@ export default App = () => {
     }
   }
 
-  register = async (email, firstName, lastName, password) => {
+  const register = async (email, firstName, lastName, password) => {
     const res = await axios.post(
       'http://localhost:3001/register',
       {
@@ -79,19 +79,19 @@ export default App = () => {
     }
   }
 
-  logout = e => {
+  const logout = e => {
     e.preventDefault();
     setState({ user: null });
     localStorage.removeItem("user");
   };
 
-  addProduct = (product, callback) => {
+  const addProduct = (product, callback) => {
     let products = state.products.slice();
     products.push(product);
     setState({ products }, () => callback && callback());
   };
 
-  addToCart = cartItem => {
+  const addToCart = cartItem => {
     let cart = state.cart;
     if (cart[cartItem.id]) {
       cart[cartItem.id].amount += cartItem.amount;
@@ -105,20 +105,20 @@ export default App = () => {
     setState({ cart });
   };
 
-  removeFromCart = cartItemId => {
+  const removeFromCart = cartItemId => {
     let cart = state.cart;
     delete cart[cartItemId];
     localStorage.setItem("cart", JSON.stringify(cart));
     setState({ cart });
   };
 
-  clearCart = () => {
+  const clearCart = () => {
     let cart = {};
     localStorage.removeItem("cart");
     setState({ cart });
   };
 
-  checkout = () => {
+  const checkout = () => {
     if (!state.user) {
       this.routerRef.current.history.push("/login");
       return;
@@ -212,3 +212,5 @@ export default App = () => {
     </div>
   );
 }
+
+export default App;

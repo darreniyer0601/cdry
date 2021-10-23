@@ -1,82 +1,97 @@
-import React, { Component } from "react";
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import { Redirect } from "react-router-dom";
-import withContext from "../withContext";
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: "",
-      password: ""
-    };
-  }
+import AuthContext from "../context/authContext";
 
-  handleChange = e => this.setState({ [e.target.name]: e.target.value, error: "" });
+const Login = (props) => {
+	const [state, setState] = useState({
+		username: "",
+		password: "",
+		error: "",
+	});
 
-  login = (e) => {
-    e.preventDefault();
+	const authContext = useContext(AuthContext);
 
-    const { username, password } = this.state;
-    if (!username || !password) {
-      return this.setState({ error: "Fill all fields!" });
-    }
-    this.props.context.login(username, password)
-      .then((loggedIn) => {
-        if (!loggedIn) {
-          this.setState({ error: "Invalid Credentails" });
-        }
-      })
-  };
+	const handleChange = (e) => {
+		setState({
+			...state,
+			[e.target.name]: e.target.value,
+		});
+	};
 
-  render() {
-    return !this.props.context.user ? (
-      <>
-        <div className="hero is-primary ">
-          <div className="hero-body container">
-            <h4 className="title">Login</h4>
-          </div>
-        </div>
-        <br />
-        <br />
-        <form onSubmit={this.login}>
-          <div className="columns is-mobile is-centered">
-            <div className="column is-one-third">
-              <div className="field">
-                <label className="label">Email: </label>
-                <input
-                  className="input"
-                  type="email"
-                  name="username"
-                  onChange={this.handleChange}
-                />
-              </div>
-              <div className="field">
-                <label className="label">Password: </label>
-                <input
-                  className="input"
-                  type="password"
-                  name="password"
-                  onChange={this.handleChange}
-                />
-              </div>
-              {this.state.error && (
-                <div className="has-text-danger">{this.state.error}</div>
-              )}
-              <div className="field is-clearfix">
-                <button
-                  className="button is-primary is-outlined is-pulled-right"
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
-          </div>
-        </form>
-      </>
-    ) : (
-      <Redirect to="/products" />
-    );
-  }
-}
+	const login = (e) => {
+		e.preventDefault();
 
-export default withContext(Login);
+		const { username, password } = state;
+		if (!username || !password) {
+			return this.setState({ error: "Fill all fields!" });
+		}
+
+		authContext.login(username, password).then((loggedIn) => {
+			if (!loggedIn) {
+				setState({
+					...state,
+					error: "Invalid Credentails",
+				});
+			}
+		});
+	};
+
+	return !authContext.user ? (
+		<>
+			<div className="hero is-primary ">
+				<div className="hero-body container">
+					<h4 className="title">Login</h4>
+				</div>
+			</div>
+			<br />
+			<br />
+			<form onSubmit={login}>
+				<div className="columns is-mobile is-centered">
+					<div className="column is-one-third">
+						<div className="field">
+							<label className="label">Email: </label>
+							<input
+								className="input"
+								type="email"
+								name="username"
+								onChange={handleChange}
+							/>
+						</div>
+						<div className="field">
+							<label className="label">Password: </label>
+							<input
+								className="input"
+								type="password"
+								name="password"
+								onChange={handleChange}
+							/>
+						</div>
+						{state.error && (
+							<div className="has-text-danger">{state.error}</div>
+						)}
+						<div className="field is-clearfix">
+							<Link
+								to="/register"
+								className="button is-secondary is-outlined is-pulled-left"
+							>
+								New user?
+							</Link>
+							<button
+								type="submit"
+								className="button is-primary is-outlined is-pulled-right"
+							>
+								Submit
+							</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</>
+	) : (
+		<Redirect to="/products" />
+	);
+};
+
+export default Login;

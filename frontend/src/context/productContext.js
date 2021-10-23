@@ -30,7 +30,7 @@ export const ProductContextProvier = (props) => {
 	};
 
 	const removeFromCart = (cartItemId) => {
-		let cart = this.state.cart;
+		let cart = state.cart;
 		delete cart[cartItemId];
 		localStorage.setItem("cart", JSON.stringify(cart));
 		setState({ cart });
@@ -43,7 +43,7 @@ export const ProductContextProvier = (props) => {
 	};
 
 	const checkout = () => {
-		if (!this.state.user) {
+		if (!state.user) {
 			props.history.push("/login");
 			return;
 		}

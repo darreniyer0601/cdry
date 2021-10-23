@@ -50,6 +50,35 @@ export default App = () => {
     }
   }
 
+  register = async (email, firstName, lastName, password) => {
+    const res = await axios.post(
+      'http://localhost:3001/register',
+      {
+        email,
+        firstName,
+        lastName,
+        password
+      },
+    ).catch((res) => {
+      return { status: 401, message: 'Unauthorized' }
+    })
+
+    if(res.status === 200) {
+      const { email } = jwt_decode(res.data.accessToken)
+      const user = {
+        email,
+        token: res.data.accessToken,
+        accessLevel: email === 'admin@example.com' ? 0 : 1
+      }
+
+      setState({ user });
+      localStorage.setItem("user", JSON.stringify(user));
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   logout = e => {
     e.preventDefault();
     setState({ user: null });
@@ -158,9 +187,14 @@ export default App = () => {
             </span>
           </Link>
           {!state.user ? (
-            <Link to="/login" className="navbar-item">
-              Login
-            </Link>
+            <>
+              <Link to="/login" className="navbar-item">
+                Login
+              </Link>
+              <Link to="/register" className="navbar-item">
+                Register
+              </Link>
+            </>
           ) : (
             <Link to="/" onClick={this.logout} className="navbar-item">
               Logout

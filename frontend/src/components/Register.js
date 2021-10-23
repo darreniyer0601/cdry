@@ -2,28 +2,30 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import withContext from "../withContext";
 
-class Login extends Component {
+class Register extends Component {
   constructor(props) {
     super(props);
     this.state = {
       username: "",
+      firstName: "",
+      lastName: "",
       password: ""
     };
   }
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value, error: "" });
 
-  login = (e) => {
+  register = (e) => {
     e.preventDefault();
 
-    const { username, password } = this.state;
+    const { username, firstName, lastName, password } = this.state;
     if (!username || !password) {
       return this.setState({ error: "Fill all fields!" });
     }
-    this.props.context.login(username, password)
+    this.props.context.register(username, firstName, lastName, password)
       .then((loggedIn) => {
         if (!loggedIn) {
-          this.setState({ error: "Invalid Credentails" });
+          this.setState({ error: "Already Registered!" });
         }
       })
   };
@@ -33,12 +35,12 @@ class Login extends Component {
       <>
         <div className="hero is-primary ">
           <div className="hero-body container">
-            <h4 className="title">Login</h4>
+            <h4 className="title">Register</h4>
           </div>
         </div>
         <br />
         <br />
-        <form onSubmit={this.login}>
+        <form onSubmit={this.register}>
           <div className="columns is-mobile is-centered">
             <div className="column is-one-third">
               <div className="field">
@@ -51,6 +53,24 @@ class Login extends Component {
                 />
               </div>
               <div className="field">
+                <label className="label">First Name: </label>
+                <input
+                  className="input"
+                  type="text"
+                  name="firstName"
+                  onChange={this.handleChange}
+                />
+              </div>
+              <div className="field">
+                <label className="label">Last Name: </label>
+                <input
+                  className="input"
+                  type="text"
+                  name="lastName"
+                  onChange={this.handleChange}
+                />
+              </div>
+              <div className="field">
                 <label className="label">Password: </label>
                 <input
                   className="input"
@@ -59,15 +79,27 @@ class Login extends Component {
                   onChange={this.handleChange}
                 />
               </div>
+              <div className="field">
+                <label className="label">Confirm Password: </label>
+                <input
+                  className="input"
+                  type="password"
+                  onChange={ (e) => {
+                    if (this.state.password != e.target.value) {
+                        this.setState({ error: "Passwords do not match!" });
+                    }
+                  }}
+                />
+              </div>
               {this.state.error && (
                 <div className="has-text-danger">{this.state.error}</div>
               )}
               <div className="field is-clearfix">
                 <Link
-                  to="/register"
+                  to="/login"
                   className="button is-secondary is-outlined is-pulled-left"
                 >
-                  New user?
+                  Already have an account?
                 </Link>
                 <button
                   type="submit"
@@ -86,4 +118,4 @@ class Login extends Component {
   }
 }
 
-export default withContext(Login);
+export default withContext(Register);

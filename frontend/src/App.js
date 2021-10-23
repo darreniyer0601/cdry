@@ -140,7 +140,6 @@ const App = () => {
     this.clearCart();
   };
 
-  
   return (
     <div className="App">
       <nav

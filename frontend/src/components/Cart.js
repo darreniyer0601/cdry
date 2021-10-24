@@ -16,7 +16,7 @@ const Cart = (props) => {
 		<>
 			<div className="hero is-primary">
 				<div className="hero-body container">
-					<h4 className="title">"My Cart"</h4>
+					<h4 className="title">My Cart</h4>
 				</div>
 			</div>
 			<br />

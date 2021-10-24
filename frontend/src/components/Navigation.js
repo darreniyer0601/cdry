@@ -27,7 +27,7 @@ const Navigation = () => {
 				aria-label="main navigation"
 			>
 				<div className="navbar-brand">
-					<b className="navbar-item is-size-4 ">CRDY</b>
+					<b className="navbar-item is-size-4 ">CDRY</b>
 					<label
 						role="button"
 						className="navbar-burger burger"
@@ -44,13 +44,8 @@ const Navigation = () => {
 						<span aria-hidden="true"></span>
 					</label>
 					<Link to="/products" className="navbar-item">
-						Products
+						NFTs
 					</Link>
-					{user && user.accessLevel < 1 && (
-						<Link to="/add-product" className="navbar-item">
-							Add Product
-						</Link>
-					)}
 					{user && (
 						<Link to="/cart" className="navbar-item">
 							Cart

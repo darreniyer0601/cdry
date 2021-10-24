@@ -226,7 +226,7 @@ def removeItem():
     if request.method == 'POST':
         data = request.get_json()
         token = data['ID']
-        getRes = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
+        getRes = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token)
         version = getRes['version']
         removeItemHelper(version, getRes['shortDescription'], token)
 

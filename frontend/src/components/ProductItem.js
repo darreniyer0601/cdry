@@ -1,5 +1,5 @@
 import React from "react";
-import './ProductItem.css'
+import './NFTImage.css'
 
 const ProductItem = (props) => {
 	const { product, user } = props;

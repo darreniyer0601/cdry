@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import AuthContext from "../context/authContext";
 
 import CartItem from "./CartItem";
@@ -6,7 +6,9 @@ import CartItem from "./CartItem";
 const Cart = (props) => {
 	const authContext = useContext(AuthContext);
 
-	const { cart, removeFromCart, clearCart, checkout } = authContext;
+	const [error, setError] = useState("");
+
+	const { cart, removeFromCart, clearCart, checkout, metaMaskAcc } = authContext;
 
 	const cartKeys = Object.keys(cart || {});
 
@@ -40,16 +42,25 @@ const Cart = (props) => {
 								</button>{" "}
 								<button
 									className="button is-success"
-									onClick={checkout}
+									onClick={() => {
+										if (metaMaskAcc != null) {
+											checkout();
+										} else {
+											setError("Connect with MetaMask to continue with your purchase")
+										}
+									}}
 								>
 									Checkout
 								</button>
 							</div>
 						</div>
+						{error && (
+							<div style={{marginLeft: "auto"}} className="has-text-danger">{error}</div>
+						)}
 					</div>
 				) : (
 					<div className="column">
-						<div className="title has-text-grey-light">No item in cart!</div>
+						<div className="title has-text-grey-light">No items in cart!</div>
 					</div>
 				)}
 			</div>

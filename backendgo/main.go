@@ -395,6 +395,7 @@ func main() {
 		log.Fatal(err)
 	}
 	alchClient = *client
+	//transferToken(whale_nft_contract_address, "1", "831698884176bafad66a690980a8dff37b4c53a64ad27e63368a345faff62a14", "0xAf9eDf72dFBDD865534FF615FC7264fE7d3a5dA4", whale_public_key)
 	withCors := cors.NewCorsHandler(cors.Options{
 		// if you leave allowedOrigins empty then fasthttpcors will treat it as "*"
 		AllowedOrigins: []string{}, // Only allow example.com to access the resource

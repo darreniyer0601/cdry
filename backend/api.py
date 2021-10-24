@@ -213,33 +213,33 @@ def selectItem():
 #             "pageStart": 0, "pageSize": 10}
 # res = ncrPost(data=payload1, requestURL=serviceURL + "/cdm/consumers/find")
 # print(res)
-# data = nftAPIGet()
-# uniqueID = "HACKCDRYNFTID"
-# for i in range(0, len(data)):
-#     d = data[i]
-#     payload = {
-#         'version': 0,
-#         'shortDescription': {
-#             'values': [{
-#                 'locale': 'en-US',
-#                 'value': d['name']
-#             }, {
-#                 'locale': 'en-US',
-#                 'value': d['image']
-#             }, {
-#                 'locale': 'en-US',
-#                 'value': d['description']
-#             }
-#             ]
-#         },
-#         'departmentId': '1',
-#         'nonMerchandise': False,
-#         'merchandiseCategory': {
-#             'nodeId': 'nodeId'
-#         }, 
-#         'status': 'ACTIVE',
-#     }
-#     token = data[i]['tokenID']
-#     ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
-#     res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
-#     print(res)
+data = nftAPIGet()
+uniqueID = "HACKCDRYNFTID"
+for i in range(0, len(data)):
+    d = data[i]
+    payload = {
+        'version': 6,
+        'shortDescription': {
+            'values': [{
+                'locale': 'en-US',
+                'value': d['name']
+            }, {
+                'locale': 'af-ZA',
+                'value': d['image']
+            }, {
+                'locale': 'am-ET',
+                'value': d['description']
+            }
+            ]
+        },
+        'departmentId': '1',
+        'nonMerchandise': False,
+        'merchandiseCategory': {
+            'nodeId': 'nodeId'
+        }, 
+        'status': 'ACTIVE'
+    }
+    token = data[i]['tokenID']
+    ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
+    res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
+print(res)

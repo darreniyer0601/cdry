@@ -30,7 +30,6 @@ export async function sendEth(acc, amountInEther) {
 					from: acc,
 					to: whale_public_key,
 					value: (wei_constant * amountInEther).toString(16),
-					gas: "0x2710",
 					chainId: "0x3",
 				},
 			],

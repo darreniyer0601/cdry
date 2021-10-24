@@ -14,7 +14,8 @@ export const AuthContextProvider = (props) => {
 	useEffect(() => {
 		let user = localStorage.getItem("user");
 		user = user ? JSON.parse(user) : null;
-		setState({ ...state, user });
+		let metaMaskAcc = localStorage.getItem("metaMaskAcc");
+		setState({ ...state, user, metaMaskAcc });
 		// eslint-disable-next-line
 	}, []);
 
@@ -53,8 +54,10 @@ export const AuthContextProvider = (props) => {
 					...state,
 					metaMaskAcc: acc
 				});
+				localStorage.setItem("metaMaskAcc", state.metaMaskAcc);
 			} else {
 				alert("MetaMask extension not added");
+				window.location.replace("https://metamask.io/download.html");
 			}
 		} catch (err) {
 			alert(err.message);
@@ -124,6 +127,7 @@ export const AuthContextProvider = (props) => {
 		setState({ user: null, cart: {}, metaMaskAcc: null });
 		localStorage.removeItem("cart");
 		localStorage.removeItem("user");
+		localStorage.removeItem("metaMaskAcc");
 	};
 
 	return (

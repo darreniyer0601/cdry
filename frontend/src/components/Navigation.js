@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import AuthContext from "../context/authContext";
 
 const Navigation = () => {
-	const { user, cart, logout, setMetaMaskAccount } = useContext(AuthContext);
+	const { user, cart, logout, metaMaskAcc, setMetaMaskAccount } = useContext(AuthContext);
 
 	const [state, setState] = useState({
 		showMenu: false,
@@ -78,9 +78,15 @@ const Navigation = () => {
 							</>
 						) : (
 							<>
-								<a href="#" onClick={metaMask} className="navbar-item">
-									Connect MetaMask
-								</a>
+								{!metaMaskAcc ? (
+									<a href="#connect" onClick={metaMask} className="navbar-item">
+										Connect MetaMask
+									</a>
+								) : (
+									<p className="navbar-item">
+										MetaMask Connected
+									</p>
+								)}
 								<Link to="/" onClick={logout} className="navbar-item">
 									Logout
 								</Link>

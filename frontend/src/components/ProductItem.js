@@ -14,13 +14,13 @@ const ProductItem = (props) => {
 								alt={product.name + ": " + product.description}
 								onClick={(e) => {
 									document.getElementById("myModal").style.display = "block";
-									document.getElementById(product.tokenID).src = e.target.src;
-									document.getElementById("caption").innerHTML = e.target.alt;
+									document.getElementById("image").src = product.image;
+									document.getElementById("caption").innerHTML = product.name + ": " + product.description;
 								  }}
 							/>
-							<div id="myModal" class="modal">
+							<div id="myModal" className="modal">
 								<span
-									class="close"
+									className="close"
 									onClick={() => {
 										document.getElementById("myModal").style.display = "none"
 									}}
@@ -28,8 +28,9 @@ const ProductItem = (props) => {
 									&times;
 								</span>
 								<img
-									class="modal-content"
-									id={product.tokenID}
+									alt={product.name}
+									className="modal-content"
+									id={"image"}
 								/>
 								<div id="caption"/>
 							</div>
@@ -43,15 +44,16 @@ const ProductItem = (props) => {
 						<div>{product.description}</div>
 						<div className="is-clearfix">
 							<button
+								id={product.tokenID}
 								disabled={user == null}
 								className="button is-small is-outlined is-primary is-pulled-right"
-								onClick={() =>
+								onClick={(e) => {
 									props.addToCart({
 										id: product.tokenID,
-										product,
+										product: product,
 										amount: 1,
 									})
-								}
+								}}
 							>
 								Add to Cart
 							</button>

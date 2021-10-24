@@ -196,7 +196,7 @@ def getItems():
             res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + str(i) + uniqueID)
             values = {}
             if res['status'] == 200:
-                values['tokenID'] = uniqueID
+                values['tokenID'] = str(i) + uniqueID
                 for value in res['data']['shortDescription']['values']:
                     if value['locale'] == 'en-US':
                         values['name'] = value['value']

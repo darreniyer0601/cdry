@@ -34,6 +34,8 @@ const Login = (props) => {
 					...state,
 					error: "Invalid Credentails",
 				});
+			} else {
+				props.history.push('/');
 			}
 		});
 	};

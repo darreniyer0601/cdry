@@ -24,11 +24,11 @@ const Register = (props) => {
 
 	const register = (e) => {
 		e.preventDefault();
-
 		const { username, firstName, lastName, password } = state;
 
 		if (!username || !password) {
-			return setState({ ...state, error: "Fill all fields!" });
+			setState({ ...state, error: "Fill all fields!" });
+			return;
 		}
 
 		authContext
@@ -36,6 +36,8 @@ const Register = (props) => {
 			.then((loggedIn) => {
 				if (!loggedIn) {
 					setState({ ...state, error: "Already Registered!" });
+				} else {
+					props.history.push('/');
 				}
 			});
 	};
@@ -95,7 +97,9 @@ const Register = (props) => {
 								type="password"
 								onChange={(e) => {
 									if (state.password !== e.target.value) {
-										this.setState({ error: "Passwords do not match!" });
+										setState({...state, error: "Passwords do not match!" });
+									} else {
+										setState({...state, error: "" });
 									}
 								}}
 							/>

@@ -1,12 +1,14 @@
-import React, { useContext } from "react";
-import ProductContext from "../context/productContext";
+import React, { useState, useContext } from "react";
+import AuthContext from "../context/authContext";
 
 import CartItem from "./CartItem";
 
 const Cart = (props) => {
-	const productContext = useContext(ProductContext);
+	const authContext = useContext(AuthContext);
 
-	const { cart } = productContext;
+	const [error, setError] = useState("");
+
+	const { cart, removeFromCart, clearCart, checkout, metaMaskAcc } = authContext;
 
 	const cartKeys = Object.keys(cart || {});
 
@@ -14,7 +16,7 @@ const Cart = (props) => {
 		<>
 			<div className="hero is-primary">
 				<div className="hero-body container">
-					<h4 className="title">My Cart</h4>
+					<h4 className="title">"My Cart"</h4>
 				</div>
 			</div>
 			<br />
@@ -26,30 +28,39 @@ const Cart = (props) => {
 								cartKey={key}
 								key={key}
 								cartItem={cart[key]}
-								removeFromCart={productContext.removeFromCart}
+								removeFromCart={removeFromCart}
 							/>
 						))}
 						<div className="column is-12 is-clearfix">
 							<br />
 							<div className="is-pulled-right">
 								<button
-									onClick={productContext.clearCart}
+									onClick={clearCart}
 									className="button is-warning "
 								>
-									Clear cart
+									Clear Cart
 								</button>{" "}
 								<button
 									className="button is-success"
-									onClick={productContext.checkout}
+									onClick={() => {
+										if (metaMaskAcc != null) {
+											checkout();
+										} else {
+											setError("Connect with MetaMask to continue with your purchase")
+										}
+									}}
 								>
 									Checkout
 								</button>
 							</div>
 						</div>
+						{error && (
+							<div style={{marginLeft: "auto"}} className="has-text-danger">{error}</div>
+						)}
 					</div>
 				) : (
 					<div className="column">
-						<div className="title has-text-grey-light">No item in cart!</div>
+						<div className="title has-text-grey-light">No items in cart!</div>
 					</div>
 				)}
 			</div>

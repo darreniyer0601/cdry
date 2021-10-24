@@ -1,40 +1,59 @@
 import React from "react";
+import './NFTImage.css'
 
 const ProductItem = (props) => {
-	const { product } = props;
+	const { product, user } = props;
 	return (
 		<div className=" column is-half">
-			<div className="box">
+			<div style={{ height: '135px' }} className="box">
 				<div className="media">
 					<div className="media-left">
 						<figure className="image is-64x64">
 							<img
-								src="https://bulma.io/images/placeholders/128x128.png"
-								alt={product.shortDesc}
+								src={product.image}
+								alt={product.name + ": " + product.description}
+								onClick={(e) => {
+									document.getElementById("myModal").style.display = "block";
+									document.getElementById("image").src = product.image;
+									document.getElementById("caption").innerHTML = product.name + ": " + product.description;
+								  }}
 							/>
+							<div id="myModal" className="modal">
+								<span
+									className="close"
+									onClick={() => {
+										document.getElementById("myModal").style.display = "none"
+									}}
+								>
+									&times;
+								</span>
+								<img
+									alt={product.name}
+									className="modal-content"
+									id={"image"}
+								/>
+								<div id="caption"/>
+							</div>
 						</figure>
 					</div>
 					<div className="media-content">
 						<b style={{ textTransform: "capitalize" }}>
 							{product.name}{" "}
-							<span className="tag is-primary">${product.price}</span>
+							<span className="tag is-primary is-pulled-right">0.01 ETH</span>
 						</b>
-						<div>{product.shortDesc}</div>
-						{product.stock > 0 ? (
-							<small>{product.stock + " Available"}</small>
-						) : (
-							<small className="has-text-danger">Out Of Stock</small>
-						)}
+						<div>{product.description}</div>
 						<div className="is-clearfix">
 							<button
-								className="button is-small is-outlined is-primary   is-pulled-right"
-								onClick={() =>
+								id={product.tokenID}
+								disabled={user == null}
+								className="button is-small is-outlined is-primary is-pulled-right"
+								onClick={(e) => {
 									props.addToCart({
-										id: product.name,
-										product,
+										id: product.tokenID,
+										product: product,
 										amount: 1,
 									})
-								}
+								}}
 							>
 								Add to Cart
 							</button>

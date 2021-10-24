@@ -2,20 +2,27 @@ import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 
 import AuthContext from "../context/authContext";
-import ProductContext from "../context/productContext";
 
 const Navigation = () => {
-	const { user, logout } = useContext(AuthContext);
-	const { cart } = useContext(ProductContext);
+	const { user, cart, logout, metaMaskAcc, setMetaMaskAccount } = useContext(AuthContext);
 
 	const [state, setState] = useState({
 		showMenu: false,
 	});
 
+	const metaMask = () => {
+		try {
+			setMetaMaskAccount();
+		} catch (err) {
+			alert(err.message);
+		}
+	};
+
 	return (
 		<div>
 			<nav
-				className="navbar container"
+				style={{ alignItems: "stretch" }}
+				className="container"
 				role="navigation"
 				aria-label="main navigation"
 			>
@@ -23,7 +30,7 @@ const Navigation = () => {
 					<b className="navbar-item is-size-4 ">CRDY</b>
 					<label
 						role="button"
-						class="navbar-burger burger"
+						className="navbar-burger burger"
 						aria-label="menu"
 						aria-expanded="false"
 						data-target="navbarBasicExample"
@@ -36,8 +43,6 @@ const Navigation = () => {
 						<span aria-hidden="true"></span>
 						<span aria-hidden="true"></span>
 					</label>
-				</div>
-				<div className={`navbar-menu ${state.showMenu ? "is-active" : ""}`}>
 					<Link to="/products" className="navbar-item">
 						Products
 					</Link>
@@ -46,26 +51,48 @@ const Navigation = () => {
 							Add Product
 						</Link>
 					)}
-					<Link to="/cart" className="navbar-item">
-						Cart
-						<span className="tag is-primary" style={{ marginLeft: "5px" }}>
-							{Object.keys(cart).length}
-						</span>
-					</Link>
-					{user ? (
-						<>
-							<Link to="/login" className="navbar-item">
-								Login
-							</Link>
-							<Link to="/register" className="navbar-item">
-								Register
-							</Link>
-						</>
-					) : (
-						<Link to="/" onClick={logout} className="navbar-item">
-							Logout
+					{user && (
+						<Link to="/cart" className="navbar-item">
+							Cart
+							<span className="tag is-primary" style={{ marginLeft: "5px" }}>
+								{Object.keys(cart).length}
+							</span>
 						</Link>
 					)}
+					<div
+						style={{
+							marginLeft: "auto",
+							display: "flex",
+							alignItems: "stretch",
+						}}
+						className={`${state.showMenu ? "is-active" : ""}`}
+					>
+						{!user ? (
+							<>
+								<Link to="/register" className="navbar-item">
+									Register
+								</Link>
+								<Link to="/login" className="navbar-item">
+									Login
+								</Link>
+							</>
+						) : (
+							<>
+								{!metaMaskAcc ? (
+									<a href="#connect" onClick={metaMask} className="navbar-item">
+										Connect MetaMask
+									</a>
+								) : (
+									<p className="navbar-item">
+										MetaMask Connected
+									</p>
+								)}
+								<Link to="/" onClick={logout} className="navbar-item">
+									Logout
+								</Link>
+							</>
+						)}
+					</div>
 				</div>
 			</nav>
 		</div>

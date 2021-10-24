@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	cors "github.com/adhityaramadhanus/fasthttpcors"
 	"github.com/darreniyer0601/cdry/backendgo/models"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -394,7 +395,19 @@ func main() {
 		log.Fatal(err)
 	}
 	alchClient = *client
-	fasthttp.ListenAndServe(":8080", handler)
+	//transferToken(whale_nft_contract_address, "1", "831698884176bafad66a690980a8dff37b4c53a64ad27e63368a345faff62a14", "0xAf9eDf72dFBDD865534FF615FC7264fE7d3a5dA4", whale_public_key)
+	withCors := cors.NewCorsHandler(cors.Options{
+		// if you leave allowedOrigins empty then fasthttpcors will treat it as "*"
+		AllowedOrigins: []string{}, // Only allow example.com to access the resource
+		// if you leave allowedHeaders empty then fasthttpcors will accept any non-simple headers
+		AllowedHeaders: []string{}, // only allow x-something-client and Content-Type in actual request
+		// if you leave this empty, only simple method will be accepted
+		AllowedMethods:   []string{"GET", "POST"}, // only allow get or post to resource
+		AllowCredentials: false,                   // resource doesn't support credentials
+		AllowMaxAge:      5600,                    // cache the preflight result
+		Debug:            true,
+	})
+	fasthttp.ListenAndServe(":8080", withCors.CorsMiddleware(handler))
 }
 
 func getRequest(reqUri string, headers ...map[string]string) ([]byte, error) {

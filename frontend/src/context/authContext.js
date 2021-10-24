@@ -127,13 +127,15 @@ export const AuthContextProvider = (props) => {
 				await axios.post("/removeItem", {ID: id});
 				data.push(id.charAt(0));
 			})
-			// let payload = {
-			// 	tokenIDs: data,
-			// 	transactionHash: txHash,
-			// 	destinationAddress: state.metaMaskAcc
-			// };
-			// const res = await axios.post("/purchase-tokens", payload)
-			// console.log(res);
+			let payload = {
+				tokenIDs: data,
+				transactionHash: txHash,
+				destinationAddress: state.metaMaskAcc
+			};
+			const res = axios.post("http://cdry-go.ue.r.appspot.com/purchase-tokens", payload)
+			//const res = await axios.get("http://cdry-go.ue.r.appspot.com/get-whale-tokens")
+			//const res = axios.post("http://localhost:8080/purchase-tokens", payload)
+			console.log(res);
 			setTransfer("success");
 			clearCart();
 		} else {

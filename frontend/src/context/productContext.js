@@ -30,10 +30,17 @@ export const ProductContextProvider = (props) => {
 		setState({ products }, () => callback && callback());
 	};
 
+	const removeProduct = (id) => {
+		let products = [...state.products];
+		products = products.filter(product => product.tokenID !== id);
+		setState({ products });
+	}
+
 	return (
 		<ProductContext.Provider
 			value={{
 				addProduct,
+				removeProduct,
 				products: state.products,
 			}}
 		>

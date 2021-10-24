@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { connectAccount, sendEth } from '../utils/ethereum';
+import ProductContext from "./productContext";
 
 const AuthContext = React.createContext();
 
@@ -10,8 +11,9 @@ export const AuthContextProvider = (props) => {
 		cart: {},
 		metaMaskAcc: null
 	});
-
 	const [transfer, setTransfer] = useState("");
+
+	const { removeProduct } = useContext(ProductContext);
 
 	useEffect(() => {
 		let user = localStorage.getItem("user");
@@ -125,6 +127,7 @@ export const AuthContextProvider = (props) => {
 			let data = []
 			Object.keys(cart).forEach(async (id) => {
 				await axios.post("/removeItem", {ID: id});
+				removeProduct(id);
 				data.push(id.charAt(0));
 			})
 			let payload = {
@@ -133,8 +136,6 @@ export const AuthContextProvider = (props) => {
 				destinationAddress: state.metaMaskAcc
 			};
 			const res = axios.post("http://cdry-go.ue.r.appspot.com/purchase-tokens", payload)
-			//const res = await axios.get("http://cdry-go.ue.r.appspot.com/get-whale-tokens")
-			//const res = axios.post("http://localhost:8080/purchase-tokens", payload)
 			console.log(res);
 			setTransfer("success");
 			clearCart();

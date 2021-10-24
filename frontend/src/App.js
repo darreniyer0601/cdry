@@ -14,8 +14,8 @@ const App = () => {
 
 	return (
 		<div className="App">
-			<AuthContextProvider>
-				<ProductContextProvider>
+			<ProductContextProvider>
+				<AuthContextProvider>
 					<Navigation />
 					<Switch>
 						<Route exact path="/" component={ProductList} />
@@ -24,8 +24,8 @@ const App = () => {
 						<Route exact path="/cart" component={Cart} />
 						<Route exact path="/products" component={ProductList} />
 					</Switch>
-				</ProductContextProvider>
-			</AuthContextProvider>
+				</AuthContextProvider>
+			</ProductContextProvider>
 		</div>
 	);
 };

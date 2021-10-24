@@ -1,36 +1,53 @@
 import React from "react";
+import './ProductItem.css'
 
 const ProductItem = (props) => {
-	const { product } = props;
+	const { product, user } = props;
 	return (
 		<div className=" column is-half">
-			<div className="box">
+			<div style={{ height: '135px' }} className="box">
 				<div className="media">
 					<div className="media-left">
 						<figure className="image is-64x64">
 							<img
-								src="https://bulma.io/images/placeholders/128x128.png"
-								alt={product.shortDesc}
+								src={product.image}
+								alt={product.name + ": " + product.description}
+								onClick={(e) => {
+									document.getElementById("myModal").style.display = "block";
+									document.getElementById(product.tokenID).src = e.target.src;
+									document.getElementById("caption").innerHTML = e.target.alt;
+								  }}
 							/>
+							<div id="myModal" class="modal">
+								<span
+									class="close"
+									onClick={() => {
+										document.getElementById("myModal").style.display = "none"
+									}}
+								>
+									&times;
+								</span>
+								<img
+									class="modal-content"
+									id={product.tokenID}
+								/>
+								<div id="caption"/>
+							</div>
 						</figure>
 					</div>
 					<div className="media-content">
 						<b style={{ textTransform: "capitalize" }}>
 							{product.name}{" "}
-							<span className="tag is-primary">${product.price}</span>
+							<span className="tag is-primary is-pulled-right">0.01 ETH</span>
 						</b>
-						<div>{product.shortDesc}</div>
-						{product.stock > 0 ? (
-							<small>{product.stock + " Available"}</small>
-						) : (
-							<small className="has-text-danger">Out Of Stock</small>
-						)}
+						<div>{product.description}</div>
 						<div className="is-clearfix">
 							<button
-								className="button is-small is-outlined is-primary   is-pulled-right"
+								disabled={user == null}
+								className="button is-small is-outlined is-primary is-pulled-right"
 								onClick={() =>
 									props.addToCart({
-										id: product.name,
+										id: product.tokenID,
 										product,
 										amount: 1,
 									})

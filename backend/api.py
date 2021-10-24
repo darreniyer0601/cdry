@@ -14,7 +14,6 @@ nepOrganization = "test-drive-e605ad46ec584ec5b0f25"
 
 serviceURL = "https://gateway-staging.ncrcloud.com"
 
-
 def nftAPIGet():
     endpoint = "/get-whale-tokens"
     url = "https://cdry-go.ue.r.appspot.com/"
@@ -156,8 +155,8 @@ def register():
         else:
             return 'There was an error registering with those credentials'
 
-@app.route('/getCatalog', methods = ['GET'])
-def getCatalog():
+@app.route('/createCatalogItem', methods = ['GET'])
+def createCatalogItem():
     if request.method == 'GET':
         data = nftAPIGet()
         uniqueID = "HACKCDRYNFTID"
@@ -175,7 +174,8 @@ def getCatalog():
                     }, {
                         'locale': 'en-US',
                         'value': d['description']
-                    }]
+                    }
+                    ]
                 },
                 'departmentId': '1',
                 'nonMerchandise': False,
@@ -186,59 +186,6 @@ def getCatalog():
             }
             ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + uniqueID + data[i]['tokenID'])
         return data
-
-@app.route('/createCatalog', methods = ['POST'])
-def createCatalog():
-    if request.method == 'POST':
-        data = request.get_json()
-        uniqueID = "HACKCDRYNFTID"
-        for i in range(0, len(data)):
-            d = data[i]
-            payload = {
-                'version': 0,
-                'shortDescription': {
-                    'values': [{
-                        'locale': 'en-US',
-                        'value': d['name']
-                    }, {
-                        'locale': 'en-US',
-                        'value': d['image']
-                    }, {
-                        'locale': 'en-US',
-                        'value': d['description']
-                    }]
-                },
-                'departmentId': '1',
-                'nonMerchandise': False,
-                'merchandiseCategory': {
-                    'nodeId': 'nodeId'
-                }, 
-                'status': 'ACTIVE',
-            }
-            ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + uniqueID + data[i]['tokenID'])
-        return data
-
-@app.route('/getItems', methods = ['GET'])
-def getItems():
-    if request.method == 'GET':
-        data = []
-        uniqueID = "HACKCDRYNFTID"
-        for i in range(1, 3):
-            res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + str(i) + uniqueID)
-            values = {}
-            if res['status'] == 200:
-                values['tokenID'] = uniqueID
-                for value in res['data']['shortDescription']['values']:
-                    if value['locale'] == 'en-US':
-                        values['name'] = value['value']
-                    elif value['locale'] == 'af-ZA':
-                        values['image'] = value['value']
-                    else:
-                        values['description'] = value['value']
-                data.append(values)
-            else:
-                return "Failed to retrieve catalog item"
-        return {'data': data}
 
 @app.route('/selectItem', methods = ['POST'])
 def selectItem():
@@ -252,6 +199,27 @@ def selectItem():
         else:
             return "Failed to retrieve catalog item"
 
+@app.route('/removeItem', methods = ['POST'])
+def removeItem():
+    if request.method == 'POST':
+        data = request.get_json()
+        token = data['ID']
+        uniqueID = "HACKCDRYNFTID"
+        getRes = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + uniqueID + token)
+        version = getRes['version']
+        payload = {
+        'version': int(version) + 1,
+        'shortDescription': getRes['shortDescription'],
+        'departmentId': '1',
+        'nonMerchandise': False,
+        'merchandiseCategory': {
+            'nodeId': 'nodeId'
+        }, 
+        'status': 'INACTIVE'
+    }
+        ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
+
+    
 # data = {'username':'username', 'password': 'password'} # Has username and password
 # payload = {
 #             'profileUsername': data['username'],
@@ -266,6 +234,7 @@ def selectItem():
 #             "pageStart": 0, "pageSize": 10}
 # res = ncrPost(data=payload1, requestURL=serviceURL + "/cdm/consumers/find")
 # print(res)
+
 data = nftAPIGet()
 uniqueID = "HACKCDRYNFTID"
 for i in range(0, len(data)):

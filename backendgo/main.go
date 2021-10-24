@@ -50,31 +50,50 @@ func removeFromStringArray(givenArray []string, value string) []string {
 	return givenArray
 }
 
-func signTransaction(privateKey *ecdsa.PrivateKey, nonce uint64, gasAmount uint64, maxFeePerGas *big.Int, maxPriorityFeePerGas *big.Int, toAddress string, amountInWei *big.Int, dataString string) string {
+func signTransaction(privateKey *ecdsa.PrivateKey, nonce uint64, gasAmount uint64, maxFeePerGas *big.Int, maxPriorityFeePerGas *big.Int, toAddress string, amountInWei *big.Int) (string, error) {
 	var chainId big.Int = *big.NewInt(3)
 
 	signer := types.NewLondonSigner(&chainId)
 
 	receiverAddress := common.HexToAddress(toAddress)
-	var data []byte
-
-	if strings.HasPrefix(dataString, "0x") {
-		data, _ = hex.DecodeString(dataString[2:])
-	} else {
-		data = nil
-	}
 
 	fmt.Printf("Account nonce: %x\n", nonce)
+
+	gasuint64, err := alchClient.EstimateGas(context.Background(), ethereum.CallMsg{
+		From:  common.HexToAddress(whale_public_key),
+		To:    &receiverAddress,
+		Value: amountInWei,
+		Data:  nil,
+	})
+
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+
+	suggestedGasPrice, err := alchClient.SuggestGasPrice(context.Background())
+
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+
+	suggestedGasTip, err := alchClient.SuggestGasTipCap(context.Background())
+
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
 
 	tx := types.NewTx(&types.DynamicFeeTx{
 		ChainID:   &chainId,
 		Nonce:     nonce,
-		Gas:       gasAmount,
-		GasFeeCap: maxFeePerGas,
-		GasTipCap: maxPriorityFeePerGas,
+		Gas:       gasuint64,
+		GasFeeCap: suggestedGasPrice,
+		GasTipCap: suggestedGasTip,
 		To:        &receiverAddress,
 		Value:     amountInWei,
-		Data:      data,
+		Data:      nil,
 	})
 
 	signedTx, err := types.SignTx(tx, signer, privateKey)
@@ -85,7 +104,7 @@ func signTransaction(privateKey *ecdsa.PrivateKey, nonce uint64, gasAmount uint6
 
 	retBytes, _ := signedTx.MarshalBinary()
 
-	return fmt.Sprintf("0x%x", retBytes)
+	return fmt.Sprintf("0x%x", retBytes), nil
 }
 
 func transferToken() {

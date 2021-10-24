@@ -2,11 +2,9 @@ import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 
 import AuthContext from "../context/authContext";
-import ProductContext from "../context/productContext";
 
 const Navigation = () => {
-	const { user, logout } = useContext(AuthContext);
-	const { cart } = useContext(ProductContext);
+	const { user, cart, logout } = useContext(AuthContext);
 
 	const [state, setState] = useState({
 		showMenu: false,
@@ -45,12 +43,14 @@ const Navigation = () => {
 							Add Product
 						</Link>
 					)}
-					<Link to="/cart" className="navbar-item">
-						Cart
-						<span className="tag is-primary" style={{ marginLeft: "5px" }}>
-							{Object.keys(cart).length}
-						</span>
-					</Link>
+					{user && (
+						<Link to="/cart" className="navbar-item">
+							Cart
+							<span className="tag is-primary" style={{ marginLeft: "5px" }}>
+								{Object.keys(cart).length}
+							</span>
+						</Link>
+					)}
 					<div style={{ marginLeft: "auto", display: "flex", alignItems: "stretch" }} className={`${state.showMenu ? "is-active" : ""}`}>
 						{!user ? (
 							<>

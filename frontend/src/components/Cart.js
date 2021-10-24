@@ -8,7 +8,7 @@ const Cart = (props) => {
 
 	const [error, setError] = useState("");
 
-	const { cart, removeFromCart, clearCart, checkout, metaMaskAcc } = authContext;
+	const { cart, removeFromCart, clearCart, checkout, metaMaskAcc, transfer } = authContext;
 
 	const cartKeys = Object.keys(cart || {});
 
@@ -57,6 +57,11 @@ const Cart = (props) => {
 						{error && (
 							<div style={{marginLeft: "auto"}} className="has-text-danger">{error}</div>
 						)}
+						{transfer === "success" ? (
+							<div style={{margin: "auto"}} className="is-success">Transaction was completed successfully.</div>
+						) : transfer === "failure" ? (
+							<div style={{margin: "auto"}} className="has-text-danger">Transaction failed. Please try again.</div>
+						) : ("")}
 					</div>
 				) : (
 					<div className="column">

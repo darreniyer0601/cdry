@@ -11,13 +11,15 @@ export const AuthContextProvider = (props) => {
 		metaMaskAcc: null
 	});
 
+	const [transfer, setTransfer] = useState("");
+
 	useEffect(() => {
 		let user = localStorage.getItem("user");
 		user = user ? JSON.parse(user) : null;
 		let metaMaskAcc = localStorage.getItem("metaMaskAcc");
 		metaMaskAcc = metaMaskAcc ? metaMaskAcc : null;
-		console.log(metaMaskAcc);
 		setState({ ...state, user, metaMaskAcc });
+		setTransfer("");
 		// eslint-disable-next-line
 	}, []);
 
@@ -110,6 +112,7 @@ export const AuthContextProvider = (props) => {
 		let cart = {};
 		localStorage.removeItem("cart");
 		setState({ ...state, cart });
+		setTransfer("");
 	};
 
 	const checkout = async () => {
@@ -117,13 +120,25 @@ export const AuthContextProvider = (props) => {
 
 		let total = Object.keys(cart).length;
 		total *= 0.01;
-		const success = await sendEth(state.metaMaskAcc, total);
-		if (success) {
+		const txHash = await sendEth(state.metaMaskAcc, total);
+		if (txHash) {
+			let data = []
 			Object.keys(cart).forEach(async (id) => {
 				await axios.post("/removeItem", {ID: id});
+				data.push(id.charAt(0));
 			})
+			let payload = {
+				tokenIDs: data,
+				transactionHash: txHash,
+				destinationAddress: state.metaMaskAcc
+			};
+			const res = await axios.post("/purchase-tokens", payload)
+			console.log(res);
+			setTransfer("success");
+			clearCart();
+		} else {
+			setTransfer("failure")
 		}
-		clearCart();
 	};
 
 	const logout = (e) => {
@@ -146,6 +161,7 @@ export const AuthContextProvider = (props) => {
 				checkout,
 				setMetaMaskAccount,
 				...state,
+				transfer,
 			}}
 		>
 			{props.children}

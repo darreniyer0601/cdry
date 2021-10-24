@@ -35,9 +35,9 @@ export async function sendEth(acc, amountInEther) {
 			],
 		})
 		console.log("success: " + txHash);
-		return true;
+		return txHash;
 	} catch(err) {
 		console.error("error: " + err);
-		return false;
+		return null;
 	}
 }

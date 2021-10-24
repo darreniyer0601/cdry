@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { connectAccount, sendEth } from '../utils/ethereum';
+import ProductContext from "./productContext";
 
 const AuthContext = React.createContext();
 
@@ -10,14 +11,17 @@ export const AuthContextProvider = (props) => {
 		cart: {},
 		metaMaskAcc: null
 	});
+	const [transfer, setTransfer] = useState("");
+
+	const { removeProduct } = useContext(ProductContext);
 
 	useEffect(() => {
 		let user = localStorage.getItem("user");
 		user = user ? JSON.parse(user) : null;
 		let metaMaskAcc = localStorage.getItem("metaMaskAcc");
 		metaMaskAcc = metaMaskAcc ? metaMaskAcc : null;
-		console.log(metaMaskAcc);
 		setState({ ...state, user, metaMaskAcc });
+		setTransfer("");
 		// eslint-disable-next-line
 	}, []);
 
@@ -110,6 +114,7 @@ export const AuthContextProvider = (props) => {
 		let cart = {};
 		localStorage.removeItem("cart");
 		setState({ ...state, cart });
+		// setTransfer("");
 	};
 
 	const checkout = async () => {
@@ -117,13 +122,32 @@ export const AuthContextProvider = (props) => {
 
 		let total = Object.keys(cart).length;
 		total *= 0.01;
-		const success = await sendEth(state.metaMaskAcc, total);
-		if (success) {
+		const txHash = await sendEth(state.metaMaskAcc, total);
+		if (txHash) {
+			let data = []
 			Object.keys(cart).forEach(async (id) => {
 				await axios.post("/removeItem", {ID: id});
+				removeProduct(id);
+				data.push(id.charAt(0));
 			})
+			let payload = {
+				tokenIDs: data,
+				transactionHash: txHash,
+				destinationAddress: state.metaMaskAcc
+			};
+<<<<<<< HEAD
+			const res = await axios.post("http://cdry-go.ue.r.appspot.com/purchase-tokens", payload)
+			//const res = await axios.get("http://cdry-go.ue.r.appspot.com/get-whale-tokens")
+			//const res = axios.post("http://localhost:8080/purchase-tokens", payload)
+=======
+			const res = axios.post("http://cdry-go.ue.r.appspot.com/purchase-tokens", payload)
+>>>>>>> dde8639697afff2228714dc1adb7e8308854648b
+			console.log(res);
+			setTransfer("success");
+			clearCart();
+		} else {
+			setTransfer("failure")
 		}
-		clearCart();
 	};
 
 	const logout = (e) => {
@@ -146,6 +170,7 @@ export const AuthContextProvider = (props) => {
 				checkout,
 				setMetaMaskAccount,
 				...state,
+				transfer,
 			}}
 		>
 			{props.children}

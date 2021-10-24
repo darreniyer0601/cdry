@@ -4,7 +4,10 @@ go 1.17
 
 require github.com/valyala/fasthttp v1.31.0
 
+require github.com/adhityaramadhanus/fasthttpcors v0.0.0-20170121111917-d4c07198763a // indirect
+
 require (
+	github.com/NCR-Corporation/ncr-bsp-hmac/go v0.0.0-20210921174358-4479e28990e5
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/andybalholm/brotli v1.0.2 // indirect
 	github.com/btcsuite/btcd v0.20.1-beta // indirect

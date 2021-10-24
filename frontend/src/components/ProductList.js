@@ -31,7 +31,7 @@ const ProductList = (props) => {
 						))
 					) : (
 						<div className="column">
-							<span className="title has-text-grey-light">
+							<span style={{ margin: "auto" }} className="title has-text-grey-light">
 								No products found!
 							</span>
 						</div>

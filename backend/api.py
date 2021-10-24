@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+from flask_cors import CORS
 import json
 import requests
 from datetime import datetime
@@ -9,6 +10,7 @@ from hmacHelper import hmacHelper
 #from ncrGet import ncrGet
 
 app = Flask(__name__)
+CORS(app)
 
 nepOrganization = "test-drive-5facf94d431942c989d49"
 
@@ -16,10 +18,19 @@ serviceURL = "https://gateway-staging.ncrcloud.com"
 
 uniqueID = "HACKCDRYNFTID"
 
+@app.route('/get-whale-tokens', methods = ['GET'])
 def nftAPIGet():
     endpoint = "/get-whale-tokens"
-    url = "https://cdry-go.ue.r.appspot.com/"
+    url="http://localhost:8080"
+    # url = "https://cdry-go.ue.r.appspot.com/"
     return (requests.get(url + endpoint, headers = {})).json()
+
+@app.route('/purchase-tokens', methods = ['POST'])
+def transferNFT():
+    endpoint = "/purchase-tokens"
+    url = "http://cdry-go.ue.r.appspot.com"
+    data = request.get_json()
+    return (requests.post(url + endpoint, data, headers = {}))
 
 def ncrGet(secretKey="797d60d9705c4478b1e580541b934e24", 
                 sharedKey="41a51f22b3a241d5982b842e9d2d864a", 
@@ -207,7 +218,7 @@ def getItems():
                             values['image'] = value['value']
                         else:
                             values['description'] = value['value']
-                data.append(values)
+                    data.append(values)
             else:
                 return "Failed to retrieve catalog item"
         return {'data': data}
@@ -229,14 +240,27 @@ def removeItem():
         data = request.get_json()
         token = data['ID']
         getRes = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token)
-        print("\n\n")
-        print(getRes)
-        print("\n\n")
         version = getRes['data']['version']
-        removeItemHelper(version, getRes['data']['shortDescription'], token)
+        payload = {
+            'version': int(version) + 1,
+            'shortDescription': getRes['data']['shortDescription'],
+            'departmentId': '1',
+            'nonMerchandise': False,
+            'merchandiseCategory': {
+                'nodeId': 'nodeId'
+                }, 
+            'status': 'INACTIVE'
+        }
+        ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token)
+        res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token)
+        print(res)
     return "Success"
 
 def removeItemHelper(version, shortDescription, token):
+    print(version)
+    print("\n\n")
+    print(token)
+    print("\n\n")
     payload = {
         'version': int(version) + 1,
         'shortDescription': shortDescription,
@@ -248,6 +272,8 @@ def removeItemHelper(version, shortDescription, token):
         'status': 'INACTIVE'
         }
     ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token)
+    res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token)
+    print(res)
 
 @app.route('/createOrder', methods=['POST'])
 def createOrder():

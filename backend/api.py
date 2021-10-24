@@ -298,8 +298,4 @@ def makeItemsInactive():
                             item['itemId']['itemCode'])
     print(ncrGet(requestURL=serviceURL + "/catalog/v2/items/"))
 
-<<<<<<< HEAD
-makeItemsInactive()
-=======
 addNFTS()
->>>>>>> 9bfa84cf057b9f4da1425acf38e712056a6cbc17

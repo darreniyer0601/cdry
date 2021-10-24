@@ -366,7 +366,7 @@ func purchaseTokensHandler(ctx *fasthttp.RequestCtx) {
 		fmt.Fprint(ctx, err)
 		ctx.SetStatusCode(fasthttp.StatusInternalServerError)
 	} else {
-		tokenIds := reqOrder.TokenIds
+		tokenIds := reqOrder.TokenIDs
 		for i := 0; i < len(tokenIds); i++ {
 			err = transferToken(whale_nft_contract_address, tokenIds[i], whale_private_key, whale_public_key, reqOrder.DestinationAddress)
 			if err != nil {

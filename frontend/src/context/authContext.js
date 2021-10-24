@@ -7,16 +7,15 @@ const AuthContext = React.createContext();
 export const AuthContextProvider = (props) => {
 	const [state, setState] = useState({
 		user: null,
+		cart: {},
 	});
 
-	// useEffect(() => {
-	// 	const fetchUserData = async () => {
-	// 	  let user = localStorage.getItem("user");
-	// 	  user = user ? JSON.parse(user) : null;
-	// 	  setState({ user });
-	// 	}
-	// 	fetchUserData();
-	// });
+	useEffect(() => {
+		let user = localStorage.getItem("user");
+		user = user ? JSON.parse(user) : null;
+		setState({ ...state, user });
+		// eslint-disable-next-line
+	}, []);
 
 	const login = async (username, password) => {
 		const res = await axios
@@ -34,6 +33,7 @@ export const AuthContextProvider = (props) => {
                 lastName: consumer.lastName
             };
 			setState({
+				...state,
 				user: consumerData
 			});
 			localStorage.setItem("user", JSON.stringify(consumerData));
@@ -59,6 +59,7 @@ export const AuthContextProvider = (props) => {
                 lastName: consumer.lastName
             };
 			setState({
+				...state,
 				user: consumerData
 			});
 			localStorage.setItem("user", JSON.stringify(consumerData));
@@ -68,9 +69,52 @@ export const AuthContextProvider = (props) => {
 		}
 	};
 
+	const addToCart = (cartItem) => {
+		let cart = state.cart;
+		if (cart[cartItem.id]) {
+			cart[cartItem.id].amount += cartItem.amount;
+		} else {
+			cart[cartItem.id] = cartItem;
+		}
+		if (cart[cartItem.id].amount > cart[cartItem.id].product.stock) {
+			cart[cartItem.id].amount = cart[cartItem.id].product.stock;
+		}
+		localStorage.setItem("cart", JSON.stringify(cart));
+		setState({ ...state, cart });
+	};
+
+	const removeFromCart = (cartItemId) => {
+		let cart = state.cart;
+		delete cart[cartItemId];
+		localStorage.setItem("cart", JSON.stringify(cart));
+		setState({ ...state, cart });
+	};
+
+	const clearCart = () => {
+		let cart = {};
+		localStorage.removeItem("cart");
+		setState({ ...state, cart });
+	};
+
+	const checkout = () => {
+		const cart = state.cart;
+
+		const products = this.state.products.map((p) => {
+			if (cart[p.name]) {
+				p.stock = p.stock - cart[p.name].amount;
+				axios.put(`http://localhost:3001/products/${p.id}`, { ...p });
+			}
+			return p;
+		});
+
+		setState({ ...state, products });
+		clearCart();
+	};
+
 	const logout = (e) => {
 		e.preventDefault();
-		setState({ user: null });
+		setState({ user: null, cart: {} });
+		localStorage.removeItem("cart");
 		localStorage.removeItem("user");
 	};
 
@@ -80,7 +124,11 @@ export const AuthContextProvider = (props) => {
 				login,
 				register,
 				logout,
-				user: state.user,
+				addToCart,
+				removeFromCart,
+				clearCart,
+				checkout,
+				...state,
 			}}
 		>
 			{props.children}

@@ -7,13 +7,14 @@ const ProductList = (props) => {
 	const productContext = useContext(ProductContext);
 	const authContext = useContext(AuthContext);
 
-	const { products, addToCart } = productContext;
+	const { products } = productContext;
+	const { user, addToCart } = authContext;
 
 	return (
 		<>
 			<div className="hero is-primary">
 				<div className="hero-body container">
-					<h4 className="title">{authContext.user ? `Hello, ${authContext.user.firstName} ${authContext.user.lastName}` : 'Our Products'}</h4>
+					<h4 className="title">{user ? `Hello, ${user.firstName} ${user.lastName}!` : 'Our Products'}</h4>
 				</div>
 			</div>
 			<br />
@@ -23,6 +24,7 @@ const ProductList = (props) => {
 						products.map((product, index) => (
 							<ProductItem
 								product={product}
+								user={authContext.user}
 								key={index}
 								addToCart={addToCart}
 							/>

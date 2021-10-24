@@ -9,14 +9,14 @@ import Navigation from "./components/Navigation";
 import ProductList from "./components/ProductList";
 
 import { AuthContextProvider } from "./context/authContext";
-import { ProductContextProvier } from "./context/productContext";
+import { ProductContextProvider } from "./context/productContext";
 
 const App = () => {
 
 	return (
 		<div className="App">
 			<AuthContextProvider>
-				<ProductContextProvier>
+				<ProductContextProvider>
 					<Navigation />
 					<Switch>
 						<Route exact path="/" component={ProductList} />
@@ -26,7 +26,7 @@ const App = () => {
 						<Route exact path="/add-product" component={AddProduct} />
 						<Route exact path="/products" component={ProductList} />
 					</Switch>
-				</ProductContextProvier>
+				</ProductContextProvider>
 			</AuthContextProvider>
 		</div>
 	);

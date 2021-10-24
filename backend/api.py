@@ -79,7 +79,9 @@ def ncrPost(secretKey="797d60d9705c4478b1e580541b934e24",
     }
 
     payload = json.dumps(data)
-
+    print(requestURL)
+    print(data)
+    print(headers)
     request = requests.post(requestURL, data=payload, headers=headers)
 
     res = dict()
@@ -226,7 +228,7 @@ def removeItem():
     if request.method == 'POST':
         data = request.get_json()
         token = data['ID']
-        getRes = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
+        getRes = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token)
         version = getRes['version']
         removeItemHelper(version, getRes['shortDescription'], token)
 
@@ -243,6 +245,26 @@ def removeItemHelper(version, shortDescription, token):
         }
     ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token)
 
+@app.route('/createOrder', methods=['POST'])
+def createOrder():
+    if request.method == 'POST':
+        data = request.get_json()
+        address = data['MetaMaskAddress']
+        ids = data['tokenIDS']
+        transactionHash = data['hash']
+        orderLines = []
+        for id in ids:
+            orderLines.append({"tokenID": id})
+        payload = {
+            "additionalReferenceIds": {
+                "MetaMaskAddress": address
+            },
+            "orderLines": orderLines, 
+            "comments": transactionHash
+        }
+        res = ncrPost(data=payload, requestURL='https://gateway-staging.ncrcloud.com/order/v2/orders/')
+        return res
+    return "Failure to create order"
 # data = {'username':'username', 'password': 'password'} # Has username and password
 # payload = {
 #             'profileUsername': data['username'],
@@ -287,7 +309,6 @@ def addNFTS():
         token = data[i]['tokenID']
         ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
         res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
-    print(res)
 
 def makeItemsInactive():
     items = ncrGet(requestURL=serviceURL + "/catalog/v2/items/")
@@ -298,4 +319,4 @@ def makeItemsInactive():
                             item['itemId']['itemCode'])
     print(ncrGet(requestURL=serviceURL + "/catalog/v2/items/"))
 
-addNFTS()
+# addNFTS()

@@ -187,6 +187,28 @@ def createCatalogItem():
             ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + uniqueID + data[i]['tokenID'])
         return data
 
+@app.route('/getItems', methods = ['GET'])
+def getItems():
+    if request.method == 'GET':
+        data = []
+        uniqueID = "HACKCDRYNFTID"
+        for i in range(1, 3):
+            res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + str(i) + uniqueID)
+            values = {}
+            if res['status'] == 200:
+                values['tokenID'] = uniqueID
+                for value in res['data']['shortDescription']['values']:
+                    if value['locale'] == 'en-US':
+                        values['name'] = value['value']
+                    elif value['locale'] == 'af-ZA':
+                        values['image'] = value['value']
+                    else:
+                        values['description'] = value['value']
+                data.append(values)
+            else:
+                return "Failed to retrieve catalog item"
+        return {'data': data}
+        
 @app.route('/selectItem', methods = ['POST'])
 def selectItem():
     if request.method == 'POST':
@@ -219,7 +241,7 @@ def removeItem():
     }
         ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
 
-    
+
 # data = {'username':'username', 'password': 'password'} # Has username and password
 # payload = {
 #             'profileUsername': data['username'],

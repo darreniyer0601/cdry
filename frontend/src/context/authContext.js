@@ -132,7 +132,7 @@ export const AuthContextProvider = (props) => {
 				transactionHash: txHash,
 				destinationAddress: state.metaMaskAcc
 			};
-			const res = axios.post("http://cdry-go.ue.r.appspot.com/purchase-tokens", payload)
+			const res = await axios.post("http://cdry-go.ue.r.appspot.com/purchase-tokens", payload)
 			//const res = await axios.get("http://cdry-go.ue.r.appspot.com/get-whale-tokens")
 			//const res = axios.post("http://localhost:8080/purchase-tokens", payload)
 			console.log(res);

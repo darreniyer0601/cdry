@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-//import jwt_decode from "jwt-decode";
+import { connectAccount } from '../utils/ethereum';
 
 const AuthContext = React.createContext();
 
@@ -8,6 +8,7 @@ export const AuthContextProvider = (props) => {
 	const [state, setState] = useState({
 		user: null,
 		cart: {},
+		metaMaskAcc: null
 	});
 
 	useEffect(() => {
@@ -42,6 +43,18 @@ export const AuthContextProvider = (props) => {
 			return false;
 		}
 	};
+
+	const setMetaMaskAccount = () => {
+		try {
+			const acc = connectAccount();
+			setState({
+				...state,
+				metaMaskAcc: acc
+			})
+		} catch (err) {
+			throw new Error(err);
+		}
+	}
 
 	const register = async (username, firstName, lastName, password) => {
 		const res = await axios
@@ -113,7 +126,7 @@ export const AuthContextProvider = (props) => {
 
 	const logout = (e) => {
 		e.preventDefault();
-		setState({ user: null, cart: {} });
+		setState({ user: null, cart: {}, metaMaskAcc: null });
 		localStorage.removeItem("cart");
 		localStorage.removeItem("user");
 	};
@@ -128,6 +141,7 @@ export const AuthContextProvider = (props) => {
 				removeFromCart,
 				clearCart,
 				checkout,
+				setMetaMaskAccount,
 				...state,
 			}}
 		>

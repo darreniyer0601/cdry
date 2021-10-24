@@ -3,10 +3,8 @@ import { Link } from "react-router-dom";
 
 import AuthContext from "../context/authContext";
 
-import { connectAccount } from "../utils/ethereum";
-
 const Navigation = () => {
-	const { user, cart, logout } = useContext(AuthContext);
+	const { user, cart, logout, setMetaMaskAcc } = useContext(AuthContext);
 
 	const [state, setState] = useState({
 		showMenu: false,
@@ -14,7 +12,7 @@ const Navigation = () => {
 
 	const metaMask = () => {
 		try {
-			connectAccount();
+			setMetaMaskAcc();
 		} catch (err) {
 			alert(err.message);
 		}
@@ -77,12 +75,12 @@ const Navigation = () => {
 								<Link to="/login" className="navbar-item">
 									Login
 								</Link>
-								<a href="#" onClick={metaMask} className="navbar-item">
-									Connect to MetaMask
-								</a>
 							</>
 						) : (
 							<>
+								<a href="#" onClick={metaMask} className="navbar-item">
+									Connect MetaMask
+								</a>
 								<Link to="/" onClick={logout} className="navbar-item">
 									Logout
 								</Link>

@@ -11,8 +11,9 @@ export async function connectAccount() {
 			accounts = newAccounts;
 			account = accounts[0];
 		});
+        return account;
 	} else {
-		throw new Error("MetaMast extension not added");
+		throw new Error("MetaMask extension not added");
 	}
 }
 

@@ -10,7 +10,7 @@ from hmacHelper import hmacHelper
 
 app = Flask(__name__)
 
-nepOrganization = "test-drive-e605ad46ec584ec5b0f25"
+nepOrganization = "test-drive-5facf94d431942c989d49"
 
 serviceURL = "https://gateway-staging.ncrcloud.com"
 
@@ -21,8 +21,8 @@ def nftAPIGet():
     url = "https://cdry-go.ue.r.appspot.com/"
     return (requests.get(url + endpoint, headers = {})).json()
 
-def ncrGet(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf", 
-                sharedKey="9f33fd5e7e3f40608efc96c47275e94a", 
+def ncrGet(secretKey="797d60d9705c4478b1e580541b934e24", 
+                sharedKey="41a51f22b3a241d5982b842e9d2d864a", 
                 nepOrganization="test-drive-e605ad46ec584ec5b0f25",
                 requestURL="https://api.ncr.com/security/role-grants/user-grants/self/effective-roles"):
     
@@ -55,8 +55,8 @@ def ncrGet(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf",
 
     return res
 
-def ncrPost(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf", 
-                sharedKey="9f33fd5e7e3f40608efc96c47275e94a", 
+def ncrPost(secretKey="797d60d9705c4478b1e580541b934e24", 
+                sharedKey="41a51f22b3a241d5982b842e9d2d864a", 
                 nepOrganization="test-drive-e605ad46ec584ec5b0f25",
                 data = {},
                 requestURL="https://api.ncr.com/security/authentication/login"):
@@ -90,8 +90,8 @@ def ncrPost(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf",
 
     return res
 
-def ncrPut(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf", 
-                sharedKey="9f33fd5e7e3f40608efc96c47275e94a", 
+def ncrPut(secretKey="797d60d9705c4478b1e580541b934e24", 
+                sharedKey="41a51f22b3a241d5982b842e9d2d864a", 
                 nepOrganization="test-drive-e605ad46ec584ec5b0f25",
                 data = {},
                 requestURL="https://api.ncr.com/security/authentication/login"):
@@ -193,8 +193,9 @@ def getItems():
     if request.method == 'GET':
         data = []
         for i in range(1, 3):
-            res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + str(i) + uniqueID)
+            res = ncrGet(requestURL = serviceURL + "/catalog/v2/items/" + str(i) + uniqueID)
             values = {}
+            print(res)
             if res['status'] == 200:
                 values['tokenID'] = str(i) + uniqueID
                 for value in res['data']['shortDescription']['values']:
@@ -262,7 +263,7 @@ def addNFTS():
     for i in range(0, len(data)):
         d = data[i]
         payload = {
-            'version': 6,
+            'version': 0,
             'shortDescription': {
                 'values': [{
                     'locale': 'en-US',
@@ -297,4 +298,4 @@ def makeItemsInactive():
                             item['itemId']['itemCode'])
     print(ncrGet(requestURL=serviceURL + "/catalog/v2/items/"))
 
-makeItemsInactive()
+addNFTS()

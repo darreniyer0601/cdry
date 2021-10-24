@@ -21,7 +21,7 @@ export const ProductContextProvider = (props) => {
 				console.log(res)
 			})
 			// eslint-disable-next-line
-	}, [state])
+	}, [])
 
 	const addProduct = (product, callback) => {
 		let products = state.products.slice();

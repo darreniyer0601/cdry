@@ -44,15 +44,20 @@ export const AuthContextProvider = (props) => {
 		}
 	};
 
-	const setMetaMaskAccount = () => {
+	const setMetaMaskAccount = async () => {
 		try {
-			const acc = connectAccount();
-			setState({
-				...state,
-				metaMaskAcc: acc
-			})
+			const acc = await connectAccount();
+			console.log(acc);
+			if (acc != null) {
+				setState({
+					...state,
+					metaMaskAcc: acc
+				});
+			} else {
+				alert("MetaMask extension not added");
+			}
 		} catch (err) {
-			throw new Error(err);
+			alert(err.message);
 		}
 	}
 

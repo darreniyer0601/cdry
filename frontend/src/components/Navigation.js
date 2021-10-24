@@ -15,7 +15,8 @@ const Navigation = () => {
 	return (
 		<div>
 			<nav
-				className="navbar container"
+				style={{ alignItems: "stretch" }}
+				className="container"
 				role="navigation"
 				aria-label="main navigation"
 			>
@@ -36,8 +37,6 @@ const Navigation = () => {
 						<span aria-hidden="true"></span>
 						<span aria-hidden="true"></span>
 					</label>
-				</div>
-				<div className={`navbar-menu ${state.showMenu ? "is-active" : ""}`}>
 					<Link to="/products" className="navbar-item">
 						Products
 					</Link>
@@ -52,20 +51,22 @@ const Navigation = () => {
 							{Object.keys(cart).length}
 						</span>
 					</Link>
-					{!user ? (
-						<>
-							<Link to="/login" className="navbar-item">
-								Login
+					<div style={{ marginLeft: "auto", display: "flex", alignItems: "stretch" }} className={`${state.showMenu ? "is-active" : ""}`}>
+						{!user ? (
+							<>
+								<Link to="/register" className="navbar-item">
+									Register
+								</Link>
+								<Link to="/login" className="navbar-item">
+									Login
+								</Link>
+							</>
+						) : (
+							<Link to="/" onClick={logout} className="navbar-item">
+								Logout
 							</Link>
-							<Link to="/register" className="navbar-item">
-								Register
-							</Link>
-						</>
-					) : (
-						<Link to="/" onClick={logout} className="navbar-item">
-							Logout
-						</Link>
-					)}
+						)}
+					</div>
 				</div>
 			</nav>
 		</div>

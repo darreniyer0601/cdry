@@ -9,14 +9,14 @@ export const AuthContextProvider = (props) => {
 		user: null,
 	});
 
-	// useEffect(() => {
-	// 	const fetchUserData = async () => {
-	// 	  let user = localStorage.getItem("user");
-	// 	  user = user ? JSON.parse(user) : null;
-	// 	  setState({ user });
-	// 	}
-	// fetchUserData();
-	// }, [state]);
+	useEffect(() => {
+		const fetchUserData = async () => {
+		  let user = localStorage.getItem("user");
+		  user = user ? JSON.parse(user) : null;
+		  setState({ user });
+		}
+		fetchUserData();
+	});
 
 	const login = async (username, password) => {
 		const res = await axios
@@ -26,14 +26,17 @@ export const AuthContextProvider = (props) => {
 			});
 
 		if (res.status === 200) {
-			// const { email } = jwt_decode(res.data.accessToken);
-			// const user = {
-			// 	email,
-			// 	token: res.data.accessToken,
-			// 	accessLevel: email === "admin@example.com" ? 0 : 1,
-			// };
-			// setState({ user });
-			// localStorage.setItem("user", JSON.stringify(user));
+			let data = res.data.data;
+			let consumer = data.consumers[0];
+            let consumerData = {
+				username: consumer.profileUsername,
+				firstName: consumer.firstName,
+                lastName: consumer.lastName
+            };
+			setState({
+				user: consumerData
+			});
+			localStorage.setItem("user", JSON.stringify(consumerData));
 			return true;
 		} else {
 			return false;
@@ -48,15 +51,17 @@ export const AuthContextProvider = (props) => {
 			});
 		console.log(res);
 		if (res.status === 200) {
-			// const { email } = jwt_decode(res.data.accessToken);
-			// const user = {
-			// 	username,
-			// 	token: res.data.accessToken,
-			// 	accessLevel: username === "admin@example.com" ? 0 : 1,
-			// };
-
-			// setState({ user });
-			// localStorage.setItem("user", JSON.stringify(user));
+			let data = res.data.data;
+			let consumer = data.consumers[0];
+            let consumerData = {
+				username: consumer.profileUsername,
+				firstName: consumer.firstName,
+                lastName: consumer.lastName
+            };
+			setState({
+				user: consumerData
+			});
+			localStorage.setItem("user", JSON.stringify(consumerData));
 			return true;
 		} else {
 			return false;

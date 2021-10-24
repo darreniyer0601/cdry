@@ -1,10 +1,12 @@
 import React, { useContext } from "react";
 import ProductContext from "../context/productContext";
+import AuthContext from "../context/authContext";
 
 import CartItem from "./CartItem";
 
 const Cart = (props) => {
 	const productContext = useContext(ProductContext);
+	const authContext = useContext(AuthContext);
 
 	const { cart } = productContext;
 
@@ -14,7 +16,7 @@ const Cart = (props) => {
 		<>
 			<div className="hero is-primary">
 				<div className="hero-body container">
-					<h4 className="title">My Cart</h4>
+					<h4 className="title">{authContext.user ? `My Cart` : 'Log In to Make Purchases'}</h4>
 				</div>
 			</div>
 			<br />

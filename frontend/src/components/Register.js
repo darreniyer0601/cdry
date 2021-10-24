@@ -37,6 +37,8 @@ const Register = (props) => {
 			.then((loggedIn) => {
 				if (!loggedIn) {
 					setState({ ...state, error: "Already Registered!" });
+				} else {
+					props.history.push('/');
 				}
 			});
 	};

@@ -23,7 +23,7 @@ def nftAPIGet():
 
 def ncrGet(secretKey="797d60d9705c4478b1e580541b934e24", 
                 sharedKey="41a51f22b3a241d5982b842e9d2d864a", 
-                nepOrganization="test-drive-e605ad46ec584ec5b0f25",
+                nepOrganization="test-drive-5facf94d431942c989d49",
                 requestURL="https://api.ncr.com/security/role-grants/user-grants/self/effective-roles"):
     
     now = datetime.now(tz=timezone.utc)
@@ -57,7 +57,7 @@ def ncrGet(secretKey="797d60d9705c4478b1e580541b934e24",
 
 def ncrPost(secretKey="797d60d9705c4478b1e580541b934e24", 
                 sharedKey="41a51f22b3a241d5982b842e9d2d864a", 
-                nepOrganization="test-drive-e605ad46ec584ec5b0f25",
+                nepOrganization="test-drive-5facf94d431942c989d49",
                 data = {},
                 requestURL="https://api.ncr.com/security/authentication/login"):
     
@@ -92,7 +92,7 @@ def ncrPost(secretKey="797d60d9705c4478b1e580541b934e24",
 
 def ncrPut(secretKey="797d60d9705c4478b1e580541b934e24", 
                 sharedKey="41a51f22b3a241d5982b842e9d2d864a", 
-                nepOrganization="test-drive-e605ad46ec584ec5b0f25",
+                nepOrganization="test-drive-5facf94d431942c989d49",
                 data = {},
                 requestURL="https://api.ncr.com/security/authentication/login"):
     

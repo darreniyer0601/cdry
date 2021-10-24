@@ -24,7 +24,6 @@ const Register = (props) => {
 
 	const register = (e) => {
 		e.preventDefault();
-		console.log(state)
 		const { username, firstName, lastName, password } = state;
 
 		if (!username || !password) {

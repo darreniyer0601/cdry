@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { connectAccount } from '../utils/ethereum';
+import { connectAccount, sendEth } from '../utils/ethereum';
 
 const AuthContext = React.createContext();
 
@@ -19,28 +19,28 @@ export const AuthContextProvider = (props) => {
 	}, []);
 
 	const login = async (username, password) => {
-		const res = await axios
-			.post("/login", { username, password })
-			.catch((res) => {
-				return { status: 401, message: "Unauthorized" };
-			});
+		try {
+			const res = await axios.post("/login", { username, password })
 
-		if (res.status === 200) {
-			let data = res.data.data;
-			let consumer = data.consumers[0];
-            let consumerData = {
-				username: consumer.profileUsername,
-				firstName: consumer.firstName,
-                lastName: consumer.lastName
-            };
-			setState({
-				...state,
-				user: consumerData
-			});
-			localStorage.setItem("user", JSON.stringify(consumerData));
-			return true;
-		} else {
-			return false;
+			if (res.status === 200) {
+				let data = res.data.data;
+				let consumer = data.consumers[0];
+				let consumerData = {
+					username: consumer.profileUsername,
+					firstName: consumer.firstName,
+					lastName: consumer.lastName
+				};
+				setState({
+					...state,
+					user: consumerData
+				});
+				localStorage.setItem("user", JSON.stringify(consumerData));
+				return true;
+			} else {
+				return false;
+			}
+		} catch (err) {
+			console.log(err.message);
 		}
 	};
 
@@ -62,40 +62,32 @@ export const AuthContextProvider = (props) => {
 	}
 
 	const register = async (username, firstName, lastName, password) => {
-		const res = await axios
-			.post("/register", { username, firstName, lastName, password })
-			.catch((res) => {
-				return { status: 401, message: "Unauthorized" };
-			});
-		console.log(res);
-		if (res.status === 200) {
-			let data = res.data.data;
-			let consumer = data.consumers[0];
-            let consumerData = {
-				username: consumer.profileUsername,
-				firstName: consumer.firstName,
-                lastName: consumer.lastName
-            };
-			setState({
-				...state,
-				user: consumerData
-			});
-			localStorage.setItem("user", JSON.stringify(consumerData));
-			return true;
-		} else {
-			return false;
+		try {
+			const res = await axios.post("/register", { username, firstName, lastName, password })
+			if (res.status === 200) {
+				let consumerData = {
+					username,
+					firstName,
+					lastName
+				};
+				setState({
+					...state,
+					user: consumerData
+				});
+				localStorage.setItem("user", JSON.stringify(consumerData));
+				return true;
+			} else {
+				return false;
+			}
+		} catch (err) {
+			console.log(err.message)
 		}
 	};
 
 	const addToCart = (cartItem) => {
 		let cart = state.cart;
-		if (cart[cartItem.id]) {
-			cart[cartItem.id].amount += cartItem.amount;
-		} else {
+		if (!cart[cartItem.id]) {
 			cart[cartItem.id] = cartItem;
-		}
-		if (cart[cartItem.id].amount > cart[cartItem.id].product.stock) {
-			cart[cartItem.id].amount = cart[cartItem.id].product.stock;
 		}
 		localStorage.setItem("cart", JSON.stringify(cart));
 		setState({ ...state, cart });
@@ -114,18 +106,16 @@ export const AuthContextProvider = (props) => {
 		setState({ ...state, cart });
 	};
 
-	const checkout = () => {
+	const checkout = async () => {
 		const cart = state.cart;
 
-		const products = this.state.products.map((p) => {
-			if (cart[p.name]) {
-				p.stock = p.stock - cart[p.name].amount;
-				axios.put(`http://localhost:3001/products/${p.id}`, { ...p });
-			}
-			return p;
+		let total = 0;
+		cart.keys().array.forEach(id => {
+			axios.post('/removeItem', { ID: id })
+				.then(() => total += 1);
 		});
-
-		setState({ ...state, products });
+		total *= 0.01;
+		sendEth(total);
 		clearCart();
 	};
 

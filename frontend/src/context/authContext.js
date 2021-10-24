@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { connectAccount } from '../utils/ethereum';
+import { connectAccount, sendEth } from '../utils/ethereum';
 
 const AuthContext = React.createContext();
 
@@ -14,86 +14,89 @@ export const AuthContextProvider = (props) => {
 	useEffect(() => {
 		let user = localStorage.getItem("user");
 		user = user ? JSON.parse(user) : null;
-		setState({ ...state, user });
+		let metaMaskAcc = localStorage.getItem("metaMaskAcc");
+		metaMaskAcc = metaMaskAcc ? metaMaskAcc : null;
+		console.log(metaMaskAcc);
+		setState({ ...state, user, metaMaskAcc });
 		// eslint-disable-next-line
 	}, []);
 
 	const login = async (username, password) => {
-		const res = await axios
-			.post("/login", { username, password })
-			.catch((res) => {
-				return { status: 401, message: "Unauthorized" };
-			});
+		try {
+			const res = await axios.post("/login", { username, password })
 
-		if (res.status === 200) {
-			let data = res.data.data;
-			let consumer = data.consumers[0];
-            let consumerData = {
-				username: consumer.profileUsername,
-				firstName: consumer.firstName,
-                lastName: consumer.lastName
-            };
-			setState({
-				...state,
-				user: consumerData
-			});
-			localStorage.setItem("user", JSON.stringify(consumerData));
-			return true;
-		} else {
-			return false;
+			if (res.status === 200) {
+				let data = res.data.data;
+				let consumer = data.consumers[0];
+				let consumerData = {
+					username: consumer.profileUsername,
+					firstName: consumer.firstName,
+					lastName: consumer.lastName
+				};
+				setState({
+					...state,
+					user: consumerData
+				});
+				localStorage.setItem("user", JSON.stringify(consumerData));
+				return true;
+			} else {
+				return false;
+			}
+		} catch (err) {
+			console.log(err.message);
 		}
 	};
 
-	const setMetaMaskAccount = () => {
+	const setMetaMaskAccount = async () => {
 		try {
-			const acc = connectAccount();
-			setState({
-				...state,
-				metaMaskAcc: acc
-			})
+			const acc = await connectAccount();
+			console.log(acc);
+			if (acc != null) {
+				setState({
+					...state,
+					metaMaskAcc: acc
+				});
+				localStorage.setItem("metaMaskAcc", acc);
+			} else {
+				alert("MetaMask extension not added");
+				window.location.replace("https://metamask.io/download.html");
+			}
 		} catch (err) {
-			throw new Error(err);
+			alert(err.message);
 		}
 	}
 
 	const register = async (username, firstName, lastName, password) => {
-		const res = await axios
-			.post("/register", { username, firstName, lastName, password })
-			.catch((res) => {
-				return { status: 401, message: "Unauthorized" };
-			});
-		console.log(res);
-		if (res.status === 200) {
-			let data = res.data.data;
-			let consumer = data.consumers[0];
-            let consumerData = {
-				username: consumer.profileUsername,
-				firstName: consumer.firstName,
-                lastName: consumer.lastName
-            };
-			setState({
-				...state,
-				user: consumerData
-			});
-			localStorage.setItem("user", JSON.stringify(consumerData));
-			return true;
-		} else {
-			return false;
+		try {
+			const res = await axios.post("/register", { username, firstName, lastName, password })
+			if (res.status === 200) {
+				let consumerData = {
+					username,
+					firstName,
+					lastName
+				};
+				setState({
+					...state,
+					user: consumerData
+				});
+				localStorage.setItem("user", JSON.stringify(consumerData));
+				return true;
+			} else {
+				return false;
+			}
+		} catch (err) {
+			console.log(err.message)
 		}
 	};
 
 	const addToCart = (cartItem) => {
 		let cart = state.cart;
-		if (cart[cartItem.id]) {
-			cart[cartItem.id].amount += cartItem.amount;
-		} else {
+		if (!cart[cartItem.id]) {
 			cart[cartItem.id] = cartItem;
-		}
-		if (cart[cartItem.id].amount > cart[cartItem.id].product.stock) {
-			cart[cartItem.id].amount = cart[cartItem.id].product.stock;
 		}
 		localStorage.setItem("cart", JSON.stringify(cart));
 		setState({ ...state, cart });
+		console.log(cart)
 	};
 
 	const removeFromCart = (cartItemId) => {
@@ -109,18 +112,17 @@ export const AuthContextProvider = (props) => {
 		setState({ ...state, cart });
 	};
 
-	const checkout = () => {
+	const checkout = async () => {
 		const cart = state.cart;
 
-		const products = this.state.products.map((p) => {
-			if (cart[p.name]) {
-				p.stock = p.stock - cart[p.name].amount;
-				axios.put(`http://localhost:3001/products/${p.id}`, { ...p });
-			}
-			return p;
-		});
-
-		setState({ ...state, products });
+		let total = Object.keys(cart).length;
+		total *= 0.01;
+		const success = await sendEth(state.metaMaskAcc, total);
+		if (success) {
+			Object.keys(cart).forEach(async (id) => {
+				await axios.post("/removeItem", {ID: id});
+			})
+		}
 		clearCart();
 	};
 
@@ -129,6 +131,7 @@ export const AuthContextProvider = (props) => {
 		setState({ user: null, cart: {}, metaMaskAcc: null });
 		localStorage.removeItem("cart");
 		localStorage.removeItem("user");
+		localStorage.removeItem("metaMaskAcc");
 	};
 
 	return (

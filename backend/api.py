@@ -197,7 +197,6 @@ def getItems():
         for i in range(1, 3):
             res = ncrGet(requestURL = serviceURL + "/catalog/v2/items/" + str(i) + uniqueID)
             values = {}
-            print(res)
             if res['status'] == 200:
                 if res['data']['status'] == 'ACTIVE':
                     values['tokenID'] = str(i) + uniqueID
@@ -240,7 +239,7 @@ def removeItem():
 def removeItemHelper(version, shortDescription, token):
     payload = {
         'version': int(version) + 1,
-        'shortDescription': {'values': [shortDescription]},
+        'shortDescription': shortDescription,
         'departmentId': '1',
         'nonMerchandise': False,
         'merchandiseCategory': {
@@ -270,6 +269,24 @@ def createOrder():
         res = ncrPost(data=payload, requestURL='https://gateway-staging.ncrcloud.com/order/v2/orders/')
         return res
     return "Failure to create order"
+
+def setAllToActive():
+    res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/")
+    for nft in res['data']['pageContent']:
+        data = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + nft['itemId']['itemCode'])
+        d = data['data']
+        payload = {
+        'version': int(d['version']) + 1,
+        'shortDescription': d['shortDescription'],
+        'departmentId': '1',
+        'nonMerchandise': False,
+        'merchandiseCategory': {
+            'nodeId': 'nodeId'
+            }, 
+        'status': 'ACTIVE'
+        }
+        ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + nft['itemId']['itemCode'])
+
 # data = {'username':'username', 'password': 'password'} # Has username and password
 # payload = {
 #             'profileUsername': data['username'],
@@ -325,3 +342,6 @@ def makeItemsInactive():
     print(ncrGet(requestURL=serviceURL + "/catalog/v2/items/"))
 
 # addNFTS()
+# makeItemsInactive()
+setAllToActive()
+print(ncrGet(requestURL=serviceURL + "/catalog/v2/items/"))

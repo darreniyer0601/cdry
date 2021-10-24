@@ -229,8 +229,12 @@ def removeItem():
         data = request.get_json()
         token = data['ID']
         getRes = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token)
-        version = getRes['version']
-        removeItemHelper(version, getRes['shortDescription'], token)
+        print("\n\n")
+        print(getRes)
+        print("\n\n")
+        version = getRes['data']['version']
+        removeItemHelper(version, getRes['data']['shortDescription'], token)
+    return "Success"
 
 def removeItemHelper(version, shortDescription, token):
     payload = {

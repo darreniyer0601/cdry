@@ -14,7 +14,7 @@ const ProductList = (props) => {
 		<>
 			<div className="hero is-primary">
 				<div className="hero-body container">
-					<h4 className="title">{user ? `Hello, ${user.firstName} ${user.lastName}!` : 'Our Products'}</h4>
+					<h4 className="title">{user ? `Hello, ${user.firstName} ${user.lastName}!` : 'NFTs'}</h4>
 				</div>
 			</div>
 			<br />

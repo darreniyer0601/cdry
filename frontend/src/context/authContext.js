@@ -14,7 +14,10 @@ export const AuthContextProvider = (props) => {
 	useEffect(() => {
 		let user = localStorage.getItem("user");
 		user = user ? JSON.parse(user) : null;
-		setState({ ...state, user });
+		let metaMaskAcc = localStorage.getItem("metaMaskAcc");
+		metaMaskAcc = metaMaskAcc ? metaMaskAcc : null;
+		console.log(metaMaskAcc);
+		setState({ ...state, user, metaMaskAcc });
 		// eslint-disable-next-line
 	}, []);
 
@@ -53,8 +56,10 @@ export const AuthContextProvider = (props) => {
 					...state,
 					metaMaskAcc: acc
 				});
+				localStorage.setItem("metaMaskAcc", acc);
 			} else {
 				alert("MetaMask extension not added");
+				window.location.replace("https://metamask.io/download.html");
 			}
 		} catch (err) {
 			alert(err.message);
@@ -91,6 +96,7 @@ export const AuthContextProvider = (props) => {
 		}
 		localStorage.setItem("cart", JSON.stringify(cart));
 		setState({ ...state, cart });
+		console.log(cart)
 	};
 
 	const removeFromCart = (cartItemId) => {
@@ -109,13 +115,14 @@ export const AuthContextProvider = (props) => {
 	const checkout = async () => {
 		const cart = state.cart;
 
-		let total = 0;
-		cart.keys().array.forEach(id => {
-			axios.post('/removeItem', { ID: id })
-				.then(() => total += 1);
-		});
+		let total = Object.keys(cart).length;
 		total *= 0.01;
-		sendEth(total);
+		const success = await sendEth(state.metaMaskAcc, total);
+		if (success) {
+			Object.keys(cart).forEach(async (id) => {
+				await axios.post("/removeItem", {ID: id});
+			})
+		}
 		clearCart();
 	};
 
@@ -124,6 +131,7 @@ export const AuthContextProvider = (props) => {
 		setState({ user: null, cart: {}, metaMaskAcc: null });
 		localStorage.removeItem("cart");
 		localStorage.removeItem("user");
+		localStorage.removeItem("metaMaskAcc");
 	};
 
 	return (

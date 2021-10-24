@@ -3,7 +3,7 @@ const whale_public_key = "0xF28Ed35a4c8258dbe47Fb6b0C9644CEf46A59DD4";
 var account;
 
 function connectAccount() {
-    if (typeof window.ethereum !== 'undefined') {
+    if (typeof window.eth !== 'undefined') {
         var ethereum = window.eth;
         var accounts = await ethereum.request({method: 'eth_requestAccounts'})
         account = accounts[0]

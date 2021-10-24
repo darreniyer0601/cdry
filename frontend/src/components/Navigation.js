@@ -4,11 +4,19 @@ import { Link } from "react-router-dom";
 import AuthContext from "../context/authContext";
 
 const Navigation = () => {
-	const { user, cart, logout } = useContext(AuthContext);
+	const { user, cart, logout, setMetaMaskAcc } = useContext(AuthContext);
 
 	const [state, setState] = useState({
 		showMenu: false,
 	});
+
+	const metaMask = () => {
+		try {
+			setMetaMaskAcc();
+		} catch (err) {
+			alert(err.message);
+		}
+	};
 
 	return (
 		<div>
@@ -51,7 +59,14 @@ const Navigation = () => {
 							</span>
 						</Link>
 					)}
-					<div style={{ marginLeft: "auto", display: "flex", alignItems: "stretch" }} className={`${state.showMenu ? "is-active" : ""}`}>
+					<div
+						style={{
+							marginLeft: "auto",
+							display: "flex",
+							alignItems: "stretch",
+						}}
+						className={`${state.showMenu ? "is-active" : ""}`}
+					>
 						{!user ? (
 							<>
 								<Link to="/register" className="navbar-item">
@@ -62,9 +77,14 @@ const Navigation = () => {
 								</Link>
 							</>
 						) : (
-							<Link to="/" onClick={logout} className="navbar-item">
-								Logout
-							</Link>
+							<>
+								<a href="#" onClick={metaMask} className="navbar-item">
+									Connect MetaMask
+								</a>
+								<Link to="/" onClick={logout} className="navbar-item">
+									Logout
+								</Link>
+							</>
 						)}
 					</div>
 				</div>

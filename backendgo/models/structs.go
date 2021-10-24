@@ -25,3 +25,9 @@ type TokenData struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
+
+type PurchaseOrder struct {
+	TokenIds           []string `json:"tokenIDs"`
+	TransactionHash    string   `json:"transactionHash"`
+	DestinationAddress string   `json:"destinationAddress"`
+}

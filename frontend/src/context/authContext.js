@@ -9,14 +9,14 @@ export const AuthContextProvider = (props) => {
 		user: null,
 	});
 
-	useEffect(() => {
-		const fetchUserData = async () => {
-		  let user = localStorage.getItem("user");
-		  user = user ? JSON.parse(user) : null;
-		  setState({ user });
-		}
-		fetchUserData();
-	});
+	// useEffect(() => {
+	// 	const fetchUserData = async () => {
+	// 	  let user = localStorage.getItem("user");
+	// 	  user = user ? JSON.parse(user) : null;
+	// 	  setState({ user });
+	// 	}
+	// 	fetchUserData();
+	// });
 
 	const login = async (username, password) => {
 		const res = await axios

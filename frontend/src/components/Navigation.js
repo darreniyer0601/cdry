@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import AuthContext from "../context/authContext";
 import ProductContext from "../context/productContext";
 
+import { connectAccount } from "../utils/ethereum";
+
 const Navigation = () => {
 	const { user, logout } = useContext(AuthContext);
 	const { cart } = useContext(ProductContext);
@@ -11,6 +13,14 @@ const Navigation = () => {
 	const [state, setState] = useState({
 		showMenu: false,
 	});
+
+	const metaMask = () => {
+		try {
+			connectAccount();
+		} catch (err) {
+			alert(err.message);
+		}
+	};
 
 	return (
 		<div>
@@ -51,7 +61,14 @@ const Navigation = () => {
 							{Object.keys(cart).length}
 						</span>
 					</Link>
-					<div style={{ marginLeft: "auto", display: "flex", alignItems: "stretch" }} className={`${state.showMenu ? "is-active" : ""}`}>
+					<div
+						style={{
+							marginLeft: "auto",
+							display: "flex",
+							alignItems: "stretch",
+						}}
+						className={`${state.showMenu ? "is-active" : ""}`}
+					>
 						{!user ? (
 							<>
 								<Link to="/register" className="navbar-item">
@@ -60,11 +77,16 @@ const Navigation = () => {
 								<Link to="/login" className="navbar-item">
 									Login
 								</Link>
+								<a href="#" onClick={metaMask} className="navbar-item">
+									Connect to MetaMask
+								</a>
 							</>
 						) : (
-							<Link to="/" onClick={logout} className="navbar-item">
-								Logout
-							</Link>
+							<>
+								<Link to="/" onClick={logout} className="navbar-item">
+									Logout
+								</Link>
+							</>
 						)}
 					</div>
 				</div>

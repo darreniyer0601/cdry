@@ -13,7 +13,8 @@ export async function connectAccount() {
 		});
         return account;
 	} else {
-		throw new Error("MetaMask extension not added");
+		// throw new Error("MetaMask extension not added");
+		return null;
 	}
 }
 

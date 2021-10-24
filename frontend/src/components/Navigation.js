@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import AuthContext from "../context/authContext";
 
 const Navigation = () => {
-	const { user, cart, logout, setMetaMaskAcc } = useContext(AuthContext);
+	const { user, cart, logout, setMetaMaskAccount } = useContext(AuthContext);
 
 	const [state, setState] = useState({
 		showMenu: false,
@@ -12,7 +12,7 @@ const Navigation = () => {
 
 	const metaMask = () => {
 		try {
-			setMetaMaskAcc();
+			setMetaMaskAccount();
 		} catch (err) {
 			alert(err.message);
 		}

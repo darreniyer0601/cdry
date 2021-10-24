@@ -62,28 +62,26 @@ export const AuthContextProvider = (props) => {
 	}
 
 	const register = async (username, firstName, lastName, password) => {
-		const res = await axios
-			.post("/register", { username, firstName, lastName, password })
-			.catch((res) => {
-				return { status: 401, message: "Unauthorized" };
-			});
-		console.log(res);
-		if (res.status === 200) {
-			let data = res.data.data;
-			let consumer = data.consumers[0];
-            let consumerData = {
-				username: consumer.profileUsername,
-				firstName: consumer.firstName,
-                lastName: consumer.lastName
-            };
-			setState({
-				...state,
-				user: consumerData
-			});
-			localStorage.setItem("user", JSON.stringify(consumerData));
-			return true;
-		} else {
-			return false;
+		try {
+			const res = await axios
+				.post("/register", { username, firstName, lastName, password })
+			if (res.status === 200) {
+				let consumerData = {
+					username,
+					firstName,
+					lastName
+				};
+				setState({
+					...state,
+					user: consumerData
+				});
+				localStorage.setItem("user", JSON.stringify(consumerData));
+				return true;
+			} else {
+				return false;
+			}
+		} catch (err) {
+			console.log(err.message)
 		}
 	};
 

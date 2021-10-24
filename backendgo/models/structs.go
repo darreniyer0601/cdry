@@ -27,7 +27,7 @@ type TokenData struct {
 }
 
 type PurchaseOrder struct {
-	TokenIds           []string `json:"tokenIDs"`
+	TokenIDs           []string `json:"tokenIDs"`
 	TransactionHash    string   `json:"transactionHash"`
 	DestinationAddress string   `json:"destinationAddress"`
 }

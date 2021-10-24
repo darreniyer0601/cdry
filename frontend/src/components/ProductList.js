@@ -23,6 +23,7 @@ const ProductList = (props) => {
 						products.map((product, index) => (
 							<ProductItem
 								product={product}
+								user={authContext.user}
 								key={index}
 								addToCart={addToCart}
 							/>

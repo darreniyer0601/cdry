@@ -10,18 +10,20 @@ export const ProductContextProvier = (props) => {
 	});
 
 	useEffect(() => {
-		const fetchProducts = async() => {
-			// const res = await axios
-			// 	.post("/createCatalogItem", nftData)
-			// 	.catch((res) => {
-			// 		return { status: 401, message: "Unauthorized" };
-			// 	});
-			// setState({
-			// 	products: [],
-			// })
-		}
-		fetchProducts();
-	})
+		axios
+			.get("/getItems")
+			.then((data) => {
+				console.log(data.data.data)
+				setState({
+					...state,
+					products: data.data.data
+				});
+			})
+			.catch((res) => {
+				console.log(res)
+			})
+			// eslint-disable-next-line
+	}, [])
 
 	const addProduct = (product, callback) => {
 		let products = state.products.slice();

@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+from flask_cors import CORS
 import json
 import requests
 from datetime import datetime
@@ -9,6 +10,7 @@ from hmacHelper import hmacHelper
 #from ncrGet import ncrGet
 
 app = Flask(__name__)
+CORS(app)
 
 nepOrganization = "test-drive-5facf94d431942c989d49"
 
@@ -16,15 +18,17 @@ serviceURL = "https://gateway-staging.ncrcloud.com"
 
 uniqueID = "HACKCDRYNFTID"
 
+@app.route('/get-whale-tokens', methods = ['GET'])
 def nftAPIGet():
     endpoint = "/get-whale-tokens"
-    url = "https://cdry-go.ue.r.appspot.com/"
+    url="http://localhost:8080"
+    # url = "https://cdry-go.ue.r.appspot.com/"
     return (requests.get(url + endpoint, headers = {})).json()
 
 @app.route('/purchase-tokens', methods = ['POST'])
 def transferNFT():
     endpoint = "/purchase-tokens"
-    url = "https://cdry-go.ue.r.appspot.com/"
+    url = "http://cdry-go.ue.r.appspot.com"
     data = request.get_json()
     return (requests.post(url + endpoint, data, headers = {}))
 

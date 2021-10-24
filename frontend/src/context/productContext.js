@@ -12,6 +12,7 @@ export const ProductContextProvider = (props) => {
 		axios
 			.get("/getItems")
 			.then((data) => {
+				console.log(data);
 				setState({
 					...state,
 					products: data.data.data

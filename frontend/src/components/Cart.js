@@ -65,7 +65,7 @@ const Cart = (props) => {
 					</div>
 				) : (
 					<div className="column">
-						<div className="title has-text-grey-light">No items in cart!</div>
+						<div style={{ margin: "auto" }} className="title has-text-grey-light">No items in cart!</div>
 					</div>
 				)}
 			</div>

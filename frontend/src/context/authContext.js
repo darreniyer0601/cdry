@@ -112,7 +112,7 @@ export const AuthContextProvider = (props) => {
 		let cart = {};
 		localStorage.removeItem("cart");
 		setState({ ...state, cart });
-		setTransfer("");
+		// setTransfer("");
 	};
 
 	const checkout = async () => {
@@ -127,13 +127,13 @@ export const AuthContextProvider = (props) => {
 				await axios.post("/removeItem", {ID: id});
 				data.push(id.charAt(0));
 			})
-			let payload = {
-				tokenIDs: data,
-				transactionHash: txHash,
-				destinationAddress: state.metaMaskAcc
-			};
-			const res = await axios.post("/purchase-tokens", payload)
-			console.log(res);
+			// let payload = {
+			// 	tokenIDs: data,
+			// 	transactionHash: txHash,
+			// 	destinationAddress: state.metaMaskAcc
+			// };
+			// const res = await axios.post("/purchase-tokens", payload)
+			// console.log(res);
 			setTransfer("success");
 			clearCart();
 		} else {

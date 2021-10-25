@@ -4,9 +4,9 @@ from datetime import datetime
 from datetime import timezone
 from hmacHelper import hmacHelper
 
-def exampleGet(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf", 
-                sharedKey="9f33fd5e7e3f40608efc96c47275e94a", 
-                nepOrganization="test-drive-e605ad46ec584ec5b0f25",
+def ncrGet(secretKey="secret-key", 
+                sharedKey="shared-key", 
+                nepOrganization="nep-org",
                 requestURL="https://api.ncr.com/security/role-grants/user-grants/self/effective-roles"):
     
     now = datetime.now(tz=timezone.utc)

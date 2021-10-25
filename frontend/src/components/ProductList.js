@@ -14,7 +14,7 @@ const ProductList = (props) => {
 		<>
 			<div className="hero is-primary">
 				<div className="hero-body container">
-					<h4 className="title">{user ? `Hello, ${user.firstName} ${user.lastName}!` : 'Our Products'}</h4>
+					<h4 className="title">{user ? `Hello, ${user.firstName} ${user.lastName}!` : 'NFTs'}</h4>
 				</div>
 			</div>
 			<br />
@@ -31,7 +31,7 @@ const ProductList = (props) => {
 						))
 					) : (
 						<div className="column">
-							<span className="title has-text-grey-light">
+							<span style={{ margin: "auto" }} className="title has-text-grey-light">
 								No products found!
 							</span>
 						</div>

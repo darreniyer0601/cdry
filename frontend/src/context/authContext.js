@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { connectAccount, sendEth } from '../utils/ethereum';
+import ProductContext from "./productContext";
 
 const AuthContext = React.createContext();
 
@@ -10,12 +11,17 @@ export const AuthContextProvider = (props) => {
 		cart: {},
 		metaMaskAcc: null
 	});
+	const [transfer, setTransfer] = useState("");
+
+	const { removeProduct } = useContext(ProductContext);
 
 	useEffect(() => {
 		let user = localStorage.getItem("user");
 		user = user ? JSON.parse(user) : null;
 		let metaMaskAcc = localStorage.getItem("metaMaskAcc");
+		metaMaskAcc = metaMaskAcc ? metaMaskAcc : null;
 		setState({ ...state, user, metaMaskAcc });
+		setTransfer("");
 		// eslint-disable-next-line
 	}, []);
 
@@ -54,7 +60,7 @@ export const AuthContextProvider = (props) => {
 					...state,
 					metaMaskAcc: acc
 				});
-				localStorage.setItem("metaMaskAcc", state.metaMaskAcc);
+				localStorage.setItem("metaMaskAcc", acc);
 			} else {
 				alert("MetaMask extension not added");
 				window.location.replace("https://metamask.io/download.html");
@@ -94,6 +100,7 @@ export const AuthContextProvider = (props) => {
 		}
 		localStorage.setItem("cart", JSON.stringify(cart));
 		setState({ ...state, cart });
+		console.log(cart)
 	};
 
 	const removeFromCart = (cartItemId) => {
@@ -107,19 +114,40 @@ export const AuthContextProvider = (props) => {
 		let cart = {};
 		localStorage.removeItem("cart");
 		setState({ ...state, cart });
+		// setTransfer("");
 	};
 
 	const checkout = async () => {
 		const cart = state.cart;
 
-		let total = 0;
-		cart.keys().array.forEach(id => {
-			axios.post('/removeItem', { ID: id })
-				.then(() => total += 1);
-		});
+		let total = Object.keys(cart).length;
 		total *= 0.01;
-		sendEth(total);
-		clearCart();
+		const txHash = await sendEth(state.metaMaskAcc, total);
+		if (txHash) {
+			let data = []
+			Object.keys(cart).forEach(async (id) => {
+				await axios.post("/removeItem", {ID: id});
+				removeProduct(id);
+				data.push(id.charAt(0));
+			})
+			let payload = {
+				tokenIDs: data,
+				transactionHash: txHash,
+				destinationAddress: state.metaMaskAcc
+			};
+<<<<<<< HEAD
+			const res = await axios.post("http://cdry-go.ue.r.appspot.com/purchase-tokens", payload)
+			//const res = await axios.get("http://cdry-go.ue.r.appspot.com/get-whale-tokens")
+			//const res = axios.post("http://localhost:8080/purchase-tokens", payload)
+=======
+			const res = axios.post("http://cdry-go.ue.r.appspot.com/purchase-tokens", payload)
+>>>>>>> dde8639697afff2228714dc1adb7e8308854648b
+			console.log(res);
+			setTransfer("success");
+			clearCart();
+		} else {
+			setTransfer("failure")
+		}
 	};
 
 	const logout = (e) => {
@@ -142,6 +170,7 @@ export const AuthContextProvider = (props) => {
 				checkout,
 				setMetaMaskAccount,
 				...state,
+				transfer,
 			}}
 		>
 			{props.children}

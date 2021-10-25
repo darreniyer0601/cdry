@@ -12,7 +12,7 @@ from hmacHelper import hmacHelper
 app = Flask(__name__)
 CORS(app)
 
-nepOrganization = "test-drive-5facf94d431942c989d49"
+nepOrganization = "nepOrganization"
 
 serviceURL = "https://gateway-staging.ncrcloud.com"
 
@@ -32,8 +32,8 @@ def transferNFT():
     data = request.get_json()
     return (requests.post(url + endpoint, data, headers = {}))
 
-def ncrGet(secretKey="797d60d9705c4478b1e580541b934e24", 
-                sharedKey="41a51f22b3a241d5982b842e9d2d864a", 
+def ncrGet(secretKey="secret-key", 
+                sharedKey="secret-key", 
                 nepOrganization=nepOrganization,
                 requestURL="https://api.ncr.com/security/role-grants/user-grants/self/effective-roles"):
     
@@ -66,8 +66,8 @@ def ncrGet(secretKey="797d60d9705c4478b1e580541b934e24",
 
     return res
 
-def ncrPost(secretKey="797d60d9705c4478b1e580541b934e24", 
-                sharedKey="41a51f22b3a241d5982b842e9d2d864a", 
+def ncrPost(secretKey="secret-key", 
+                sharedKey="shared-key", 
                 nepOrganization=nepOrganization,
                 data = {},
                 requestURL="https://api.ncr.com/security/authentication/login"):
@@ -103,8 +103,8 @@ def ncrPost(secretKey="797d60d9705c4478b1e580541b934e24",
 
     return res
 
-def ncrPut(secretKey="797d60d9705c4478b1e580541b934e24", 
-                sharedKey="41a51f22b3a241d5982b842e9d2d864a", 
+def ncrPut(secretKey="secret-key", 
+                sharedKey="shared-key", 
                 nepOrganization=nepOrganization,
                 data = {},
                 requestURL="https://api.ncr.com/security/authentication/login"):
@@ -354,6 +354,21 @@ def addNFTS():
             }, 
             'status': 'ACTIVE'
         }
+<<<<<<< HEAD
+        uniqueID = "HACKCDRYNFTID"
+        res = ncrPost(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + uniqueID)
+        if res['status'] == 200:
+            return "Successful"
+        else:
+            return "Failed to upload catalog item"
+            
+data = {'username':'username', 'password': 'password'} # Has username and password
+payload = {"searchCriteria": {"profileUsername": data['username'], 
+            "socialSecurityNumber": data['password']}, "operator": "AND", 
+            "pageStart": 0, "pageSize": 10}
+res = ncrPost(data=payload, requestURL=serviceURL + "/cdm/consumers/find")
+print(res['status'])
+=======
         token = data[i]['tokenID']
         ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
         res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
@@ -368,6 +383,10 @@ def makeItemsInactive():
     print(ncrGet(requestURL=serviceURL + "/catalog/v2/items/"))
 
 # addNFTS()
+<<<<<<< HEAD
+>>>>>>> 056ac06e6f6dfc6b46f90865558ac69e12e03265
+=======
 # makeItemsInactive()
 setAllToActive()
 print(ncrGet(requestURL=serviceURL + "/catalog/v2/items/"))
+>>>>>>> master

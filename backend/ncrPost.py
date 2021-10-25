@@ -4,9 +4,9 @@ from datetime import datetime
 from datetime import timezone
 from hmacHelper import hmacHelper
 
-def examplePost(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf", 
-                sharedKey="9f33fd5e7e3f40608efc96c47275e94a", 
-                nepOrganization="test-drive-e605ad46ec584ec5b0f25",
+def examplePost(secretKey="secret-key", 
+                sharedKey="shared-key", 
+                nepOrganization="nep-Org",
                 data = {},
                 requestURL="https://api.ncr.com/security/authentication/login"):
     

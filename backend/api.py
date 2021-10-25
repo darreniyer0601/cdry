@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+from flask_cors import CORS
 import json
 import requests
 from datetime import datetime
@@ -9,20 +10,31 @@ from hmacHelper import hmacHelper
 #from ncrGet import ncrGet
 
 app = Flask(__name__)
+CORS(app)
 
-nepOrganization = "test-drive-e605ad46ec584ec5b0f25"
+nepOrganization = "nepOrganization"
 
 serviceURL = "https://gateway-staging.ncrcloud.com"
 
+uniqueID = "HACKCDRYNFTID"
 
+@app.route('/get-whale-tokens', methods = ['GET'])
 def nftAPIGet():
     endpoint = "/get-whale-tokens"
-    url = "https://cdry-go.ue.r.appspot.com/"
+    url="http://localhost:8080"
+    # url = "https://cdry-go.ue.r.appspot.com/"
     return (requests.get(url + endpoint, headers = {})).json()
 
-def ncrGet(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf", 
-                sharedKey="9f33fd5e7e3f40608efc96c47275e94a", 
-                nepOrganization="test-drive-e605ad46ec584ec5b0f25",
+@app.route('/purchase-tokens', methods = ['POST'])
+def transferNFT():
+    endpoint = "/purchase-tokens"
+    url = "http://cdry-go.ue.r.appspot.com"
+    data = request.get_json()
+    return (requests.post(url + endpoint, data, headers = {}))
+
+def ncrGet(secretKey="secret-key", 
+                sharedKey="secret-key", 
+                nepOrganization=nepOrganization,
                 requestURL="https://api.ncr.com/security/role-grants/user-grants/self/effective-roles"):
     
     now = datetime.now(tz=timezone.utc)
@@ -54,9 +66,9 @@ def ncrGet(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf",
 
     return res
 
-def ncrPost(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf", 
-                sharedKey="9f33fd5e7e3f40608efc96c47275e94a", 
-                nepOrganization="test-drive-e605ad46ec584ec5b0f25",
+def ncrPost(secretKey="secret-key", 
+                sharedKey="shared-key", 
+                nepOrganization=nepOrganization,
                 data = {},
                 requestURL="https://api.ncr.com/security/authentication/login"):
     
@@ -78,7 +90,9 @@ def ncrPost(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf",
     }
 
     payload = json.dumps(data)
-
+    print(requestURL)
+    print(data)
+    print(headers)
     request = requests.post(requestURL, data=payload, headers=headers)
 
     res = dict()
@@ -89,9 +103,9 @@ def ncrPost(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf",
 
     return res
 
-def ncrPut(secretKey="0a0bf40d942b4fe4a5ed82417a3799cf", 
-                sharedKey="9f33fd5e7e3f40608efc96c47275e94a", 
-                nepOrganization="test-drive-e605ad46ec584ec5b0f25",
+def ncrPut(secretKey="secret-key", 
+                sharedKey="shared-key", 
+                nepOrganization=nepOrganization,
                 data = {},
                 requestURL="https://api.ncr.com/security/authentication/login"):
     
@@ -156,11 +170,10 @@ def register():
         else:
             return 'There was an error registering with those credentials'
 
-@app.route('/getCatalog', methods = ['GET'])
-def getCatalog():
+@app.route('/createCatalogItem', methods = ['GET'])
+def createCatalogItem():
     if request.method == 'GET':
         data = nftAPIGet()
-        uniqueID = "HACKCDRYNFTID"
         for i in range(0, len(data)):
             d = data[i]
             payload = {
@@ -175,7 +188,8 @@ def getCatalog():
                     }, {
                         'locale': 'en-US',
                         'value': d['description']
-                    }]
+                    }
+                    ]
                 },
                 'departmentId': '1',
                 'nonMerchandise': False,
@@ -184,58 +198,27 @@ def getCatalog():
                 }, 
                 'status': 'ACTIVE',
             }
-            ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + uniqueID + data[i]['tokenID'])
-        return data
-
-@app.route('/createCatalog', methods = ['POST'])
-def createCatalog():
-    if request.method == 'POST':
-        data = request.get_json()
-        uniqueID = "HACKCDRYNFTID"
-        for i in range(0, len(data)):
-            d = data[i]
-            payload = {
-                'version': 0,
-                'shortDescription': {
-                    'values': [{
-                        'locale': 'en-US',
-                        'value': d['name']
-                    }, {
-                        'locale': 'en-US',
-                        'value': d['image']
-                    }, {
-                        'locale': 'en-US',
-                        'value': d['description']
-                    }]
-                },
-                'departmentId': '1',
-                'nonMerchandise': False,
-                'merchandiseCategory': {
-                    'nodeId': 'nodeId'
-                }, 
-                'status': 'ACTIVE',
-            }
-            ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + uniqueID + data[i]['tokenID'])
+            ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + data[i]['tokenID'] + uniqueID)
         return data
 
 @app.route('/getItems', methods = ['GET'])
 def getItems():
     if request.method == 'GET':
         data = []
-        uniqueID = "HACKCDRYNFTID"
         for i in range(1, 3):
-            res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + str(i) + uniqueID)
+            res = ncrGet(requestURL = serviceURL + "/catalog/v2/items/" + str(i) + uniqueID)
             values = {}
             if res['status'] == 200:
-                values['tokenID'] = uniqueID
-                for value in res['data']['shortDescription']['values']:
-                    if value['locale'] == 'en-US':
-                        values['name'] = value['value']
-                    elif value['locale'] == 'af-ZA':
-                        values['image'] = value['value']
-                    else:
-                        values['description'] = value['value']
-                data.append(values)
+                if res['data']['status'] == 'ACTIVE':
+                    values['tokenID'] = str(i) + uniqueID
+                    for value in res['data']['shortDescription']['values']:
+                        if value['locale'] == 'en-US':
+                            values['name'] = value['value']
+                        elif value['locale'] == 'af-ZA':
+                            values['image'] = value['value']
+                        else:
+                            values['description'] = value['value']
+                    data.append(values)
             else:
                 return "Failed to retrieve catalog item"
         return {'data': data}
@@ -244,13 +227,91 @@ def getItems():
 def selectItem():
     if request.method == 'POST':
         data = request.get_json()
-        uniqueID = "HACKCDRYNFTID"
         token = data['ID']
-        res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + uniqueID + token)
+        res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
         if res['status'] == 200:
             return res
         else:
             return "Failed to retrieve catalog item"
+
+@app.route('/removeItem', methods = ['POST'])
+def removeItem():
+    if request.method == 'POST':
+        data = request.get_json()
+        token = data['ID']
+        getRes = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token)
+        version = getRes['data']['version']
+        payload = {
+            'version': int(version) + 1,
+            'shortDescription': getRes['data']['shortDescription'],
+            'departmentId': '1',
+            'nonMerchandise': False,
+            'merchandiseCategory': {
+                'nodeId': 'nodeId'
+                }, 
+            'status': 'INACTIVE'
+        }
+        ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token)
+        res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token)
+        print(res)
+    return "Success"
+
+def removeItemHelper(version, shortDescription, token):
+    print(version)
+    print("\n\n")
+    print(token)
+    print("\n\n")
+    payload = {
+        'version': int(version) + 1,
+        'shortDescription': shortDescription,
+        'departmentId': '1',
+        'nonMerchandise': False,
+        'merchandiseCategory': {
+            'nodeId': 'nodeId'
+            }, 
+        'status': 'INACTIVE'
+        }
+    ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token)
+    res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token)
+    print(res)
+
+@app.route('/createOrder', methods=['POST'])
+def createOrder():
+    if request.method == 'POST':
+        data = request.get_json()
+        address = data['MetaMaskAddress']
+        ids = data['tokenIDS']
+        transactionHash = data['hash']
+        orderLines = []
+        for id in ids:
+            orderLines.append({"tokenID": id})
+        payload = {
+            "additionalReferenceIds": {
+                "MetaMaskAddress": address
+            },
+            "orderLines": orderLines, 
+            "comments": transactionHash
+        }
+        res = ncrPost(data=payload, requestURL='https://gateway-staging.ncrcloud.com/order/v2/orders/')
+        return res
+    return "Failure to create order"
+
+def setAllToActive():
+    res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/")
+    for nft in res['data']['pageContent']:
+        data = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + nft['itemId']['itemCode'])
+        d = data['data']
+        payload = {
+        'version': int(d['version']) + 1,
+        'shortDescription': d['shortDescription'],
+        'departmentId': '1',
+        'nonMerchandise': False,
+        'merchandiseCategory': {
+            'nodeId': 'nodeId'
+            }, 
+        'status': 'ACTIVE'
+        }
+        ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + nft['itemId']['itemCode'])
 
 # data = {'username':'username', 'password': 'password'} # Has username and password
 # payload = {
@@ -266,33 +327,48 @@ def selectItem():
 #             "pageStart": 0, "pageSize": 10}
 # res = ncrPost(data=payload1, requestURL=serviceURL + "/cdm/consumers/find")
 # print(res)
-# data = nftAPIGet()
-# uniqueID = "HACKCDRYNFTID"
-# for i in range(0, len(data)):
-#     d = data[i]
-#     payload = {
-#         'version': 0,
-#         'shortDescription': {
-#             'values': [{
-#                 'locale': 'en-US',
-#                 'value': d['name']
-#             }, {
-#                 'locale': 'en-US',
-#                 'value': d['image']
-#             }, {
-#                 'locale': 'en-US',
-#                 'value': d['description']
-#             }
-#             ]
-#         },
-#         'departmentId': '1',
-#         'nonMerchandise': False,
-#         'merchandiseCategory': {
-#             'nodeId': 'nodeId'
-#         }, 
-#         'status': 'ACTIVE',
-#     }
-#     token = data[i]['tokenID']
-#     ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
-#     res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
-#     print(res)
+
+def addNFTS():
+    data = nftAPIGet()
+    for i in range(0, len(data)):
+        d = data[i]
+        payload = {
+            'version': 0,
+            'shortDescription': {
+                'values': [{
+                    'locale': 'en-US',
+                    'value': d['name']
+                }, {
+                    'locale': 'af-ZA',
+                    'value': d['image']
+                }, {
+                    'locale': 'am-ET',
+                    'value': d['description']
+                }
+                ]
+            },
+            'departmentId': '1',
+            'nonMerchandise': False,
+            'merchandiseCategory': {
+                'nodeId': 'nodeId'
+            }, 
+            'status': 'ACTIVE'
+        }
+        token = data[i]['tokenID']
+        ncrPut(data=payload, requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
+        res = ncrGet(requestURL=serviceURL + "/catalog/v2/items/" + token + uniqueID)
+
+def makeItemsInactive():
+    items = ncrGet(requestURL=serviceURL + "/catalog/v2/items/")
+    for item in items['data']['pageContent']:
+        if not item['itemId']['itemCode'][0].isdigit() and item['status'] == 'ACTIVE':
+            removeItemHelper(item['version'], 
+                            item['shortDescription'],
+                            item['itemId']['itemCode'])
+    print(ncrGet(requestURL=serviceURL + "/catalog/v2/items/"))
+
+# addNFTS()
+
+# makeItemsInactive()
+setAllToActive()
+print(ncrGet(requestURL=serviceURL + "/catalog/v2/items/"))
